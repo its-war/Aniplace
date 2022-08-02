@@ -44,3 +44,7 @@ export function listarAnimes(){
 export function listarAnime(id){
     return http.get('anime/listar/' + id, {headers: {'x-access-token': window.localStorage.getItem('token')}});
 }
+
+export function getRanking(idAnime){
+    return http.get('ranking/get/' + idAnime, {headers: {'x-access-token': window.localStorage.getItem('token')}});
+}

@@ -11,8 +11,10 @@
       <div class="anime-info" :style="this.$vuetify.breakpoint.name === 'xs' ? 'float: none; width: 100%' : ''">
         <h1 :style="this.$vuetify.breakpoint.name === 'xs' ? 'font-size: 20px' : ''">{{anime.nome}}</h1>
         <h3>
-          {{anime.nomeAlternativo}}
-          — <span>8,73<v-icon class="yellow--text" style="padding-bottom: 5px !important;">mdi-star</v-icon></span>
+          <span v-show="anime.nomeAlternativo !== ''">{{anime.nomeAlternativo}} — </span>
+          <span v-if="nota === ''"><v-btn style="color: #ff4a3b" icon loading></v-btn></span>
+          <span v-else-if="nota === null">Sem Nota</span>
+          <span v-else>{{nota}}<v-icon class="yellow--text" style="padding-bottom: 5px !important;">mdi-star</v-icon></span>
         </h3>
         <v-btn v-for="(genero, g) in anime.generos" :key="g" :x-small="btnSmall"><v-icon>mdi-tag</v-icon>
           {{ genero.nome }}</v-btn>
@@ -70,6 +72,7 @@
                          :temporada="temporada.numero"
                          :numero="episodio.numero"
                          :thumb="episodio.thumb"/>
+            <h2 v-if="anime.temporada[temporadaSelecionada - 1].episodios.length < 1">Ainda não há episódios cadastrados.</h2>
           </div>
         </div>
       </div>
@@ -86,7 +89,7 @@
 <script>
 import EpisodioBox from "@/components/episodio/EpisodioBox";
 import SemelhanteBox from "@/components/episodio/SemelhanteBox";
-import {listarAnime} from "@/plugins/axios";
+import {listarAnime, getRanking} from "@/plugins/axios";
 
 export default {
   name: "AnimePageViewComponent",
@@ -134,6 +137,7 @@ export default {
       ]
     },
     temporadaSelecionada: 1,
+    nota: ''
   }),
   computed: {
     displayCover(){
@@ -178,6 +182,7 @@ export default {
           for(let i = 0; i < this.anime.temporada.length; i++){
             this.anime.temporada[i].label = this.anime.temporada[i].numero + "ª Temporada";
           }
+          this.getNota();
         }
       });
     },
@@ -192,6 +197,11 @@ export default {
         case 4: return 'Outono de ' + ano;
         default: return '??';
       }
+    },
+    getNota(){
+      getRanking(this.anime._id).then((value) => {
+        this.nota = value.data.nota;
+      });
     }
   },
   mounted() {
@@ -246,6 +256,11 @@ $cover-height: 600px;
   z-index: 14;
   overflow: hidden;
   border-radius: 16px;
+  transition: 150ms;
+}
+
+.img-animation:hover {
+  transform: scale(1.05);
 }
 
 .img-animation::before {

@@ -11,9 +11,9 @@
                 {{genero.nome}} <span class="genero-spacer" v-if="j !== destaque.anime.generos.length - 1">—</span>
               </span>
           </h3>
-          <p :style="destaqueInfoStyle">Nota</p>
+          <p :style="destaqueInfoStyle" v-if="nota[i] !== undefined">{{nota[i]}} <v-icon class="yellow--text" style="padding-bottom: 5px !important;">mdi-star</v-icon></p>
           <v-btn :x-small="btnStyle" icon dark><v-icon color="red">mdi-heart-outline</v-icon></v-btn>
-          <v-btn :x-small="btnStyle" icon dark><v-icon>mdi-redo</v-icon></v-btn>
+          <v-btn @click="animePage(destaque.anime._id)" :x-small="btnStyle" icon dark><v-icon>mdi-redo</v-icon></v-btn>
         </div>
       </div>
     </v-carousel-item>
@@ -21,18 +21,30 @@
 </template>
 
 <script>
-import {listarDestaques} from "@/plugins/axios";
+import {listarDestaques, getRanking} from "@/plugins/axios";
 
 export default {
   name: "DestaquesComponent",
   data: () => ({
-    destaques: []
+    destaques: [],
+    nota: []
   }),
   methods: {
     start(){
       listarDestaques().then((value) => {
         this.destaques = value.data.destaques;
+        this.getNota()
       });
+    },
+    animePage(id){
+      this.$router.push({name: 'Anime', params: {id: id}});
+    },
+    async getNota(){
+      for(let i = 0; i < this.destaques.length; i++){
+        await getRanking(this.destaques[i].anime._id).then((value) => {
+          this.nota.push(value.data.nota);
+        });
+      }
     }
   },
   created() {
