@@ -1,4 +1,4 @@
-# projeto-teste
+# Aniplace Frontend
 
 ## Project setup
 ```
