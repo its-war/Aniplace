@@ -1,0 +1,9 @@
+export const SET_USER = 'AUTH/SET_USER';
+export const SET_TOKEN = 'AUTH/SET_TOKEN';
+export const SET_LOADING = 'AUTH/SET_LOADING';
+export const SET_LOGIN_ERR = 'AUTH/SET_LOGIN_ERR';
+export const SET_CADASTRO_ERR = 'AUTH/SET_CADASTRO_ERR';
+export const SET_CADASTRO_MSG = 'AUTH/SET_CADASTRO_MSG';
+export const SET_lOGIN_MSG = 'AUTH/SET_lOGIN_MSG';
+export const SET_ATIVO_MSG = 'AUTH/SET_ATIVO_MSG';
+export const SET_ATIVO_SNACKBAR = 'AUTH/SET_ATIVO_SNACKBAR';
