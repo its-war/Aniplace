@@ -63,13 +63,16 @@ export default {
   width: 25%;
   padding: 15px;
   transition: 300ms;
+  border: solid 2px transparent;
+  background-color: rgb(30,30,30);
+  border-radius: 10px !important;
 }
 
 .anime-box img {
   width: 100%;
   height: 300px;
-  border-top-left-radius: 5%;
-  border-top-right-radius: 5%;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
   cursor: pointer;
 }
 
@@ -77,13 +80,13 @@ export default {
   background-color: rgba(65, 65, 65, 0.98);
   width: 100%;
   padding: 5px;
-  border-bottom-left-radius: 20px;
-  border-bottom-right-radius: 20px;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
   cursor: pointer;
 }
 
 .anime-box:hover {
   transform: scale(1.2);
-  background-color: #F44336;
+  border: solid 2px #ff4a3b;
 }
 </style>

@@ -50,6 +50,7 @@ export default {
 
 .episodio-box:hover {
   background-color: transparent;
+  border: solid 2px #ff4a3b;
   transform: scale(1.1);
 }
 
