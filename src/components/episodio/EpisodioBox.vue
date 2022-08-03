@@ -2,8 +2,24 @@
   <div class="episodio-box" :style="this.$vuetify.breakpoint.name === 'xs' ? 'width: 100%' : ''">
     <h3 @click="assistir()">Episódio {{this.$props.numero}}</h3>
     <img :src="'/img/episodios/' + this.$props.thumb" :alt="'Thumb do episodio' + this.$props.numero"/>
-    <v-btn @click="assistir()"><v-icon>mdi-play-box</v-icon> Assistir</v-btn>
-    <v-btn><v-icon>mdi-download</v-icon> Baixar</v-btn>
+    <v-tooltip top color="error">
+      <template v-slot:activator="{on,attrs}">
+        <v-btn color="white" @click="assistir()" icon v-bind="attrs" v-on="on"><v-icon>mdi-play</v-icon></v-btn>
+      </template>
+      <span>Assistir</span>
+    </v-tooltip>
+    <v-tooltip top color="error">
+      <template v-slot:activator="{on,attrs}">
+        <v-btn color="white" icon v-bind="attrs" v-on="on"><v-icon>mdi-download</v-icon></v-btn>
+      </template>
+      <span>Baixar Episódio</span>
+    </v-tooltip>
+    <v-tooltip top color="error">
+      <template v-slot:activator="{on,attrs}">
+        <v-btn color="white" icon v-bind="attrs" v-on="on"><v-icon>mdi-comment-text-outline</v-icon></v-btn>
+      </template>
+      <span>Comentar</span>
+    </v-tooltip>
   </div>
 </template>
 
@@ -60,7 +76,6 @@ export default {
 
 .episodio-box button {
   margin: 2px 0;
-  width: 100%;
 }
 
 .episodio-box h3 {

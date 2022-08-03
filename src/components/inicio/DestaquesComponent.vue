@@ -11,10 +11,16 @@
                 {{genero.nome}} <span class="genero-spacer" v-if="j !== destaque.anime.generos.length - 1">—</span>
               </span>
           </h3>
-          <p :style="destaqueInfoStyle">
-            <span v-show="nota[i] !== null">{{nota[i]}} <v-icon class="yellow--text" style="padding-bottom: 5px !important;">mdi-star</v-icon></span>
-            <span v-show="nota[i] === null">Sem Nota</span>
-          </p>
+          <p :style="destaqueInfoStyle"></p>
+            <v-tooltip bottom color="rgb(30,30,30)">
+              <template v-slot:activator="{on, attrs}">
+                <div v-on="on" v-bind="attrs" style="width: 100px; margin: auto; cursor: default">
+                  <span v-show="nota[i] !== null">{{nota[i]}} <v-icon class="yellow--text" style="padding-bottom: 5px !important;">mdi-star</v-icon></span>
+                  <span v-show="nota[i] === null">Sem Nota</span>
+                </div>
+              </template>
+              <span>{{quantidade[i]}} pessoas votaram nesse Anime.</span>
+            </v-tooltip>
           <v-btn :x-small="btnStyle" icon dark><v-icon color="red">mdi-heart-outline</v-icon></v-btn>
           <v-btn @click="animePage(destaque.anime._id)" :x-small="btnStyle" icon dark><v-icon>mdi-redo</v-icon></v-btn>
         </div>
@@ -30,7 +36,8 @@ export default {
   name: "DestaquesComponent",
   data: () => ({
     destaques: [],
-    nota: []
+    nota: [],
+    quantidade: []
   }),
   methods: {
     start(){
@@ -46,6 +53,7 @@ export default {
       for(let i = 0; i < this.destaques.length; i++){
         await getRanking(this.destaques[i].anime._id).then((value) => {
           this.nota.push(value.data.nota);
+          this.quantidade.push(value.data.quantidade);
         });
       }
     }

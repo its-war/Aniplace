@@ -4,18 +4,25 @@
     <div class="anime-cover-sheet" :style="this.$vuetify.breakpoint.name === 'xs' ? 'display: none' : ''"></div>
     <div class="anime" :style="this.$vuetify.breakpoint.name === 'xs' ? 'margin-top: 0 !important' : ''">
       <div class="anime-foto" :style="animeFotoStyle">
-        <div class="img-animation">
+        <div class="img-animation img-animation-loading" id="img">
           <img :style="this.$vuetify.breakpoint.name === 'xs' ? 'width: 100% !important' : ''" :src="'/img/anime/' + anime.foto" alt="Foto do Anime"/>
         </div>
       </div>
       <div class="anime-info" :style="this.$vuetify.breakpoint.name === 'xs' ? 'float: none; width: 100%' : ''">
         <h1 :style="this.$vuetify.breakpoint.name === 'xs' ? 'font-size: 20px' : ''">{{anime.nome}}</h1>
-        <h3>
-          <span v-show="anime.nomeAlternativo !== ''">{{anime.nomeAlternativo}} — </span>
-          <span v-if="nota === ''"><v-btn style="color: #ff4a3b" icon loading></v-btn></span>
-          <span v-else-if="nota === null">Sem Nota</span>
-          <span v-else>{{nota}}<v-icon class="yellow--text" style="padding-bottom: 5px !important;">mdi-star</v-icon></span>
-        </h3>
+        <span v-show="anime.nomeAlternativo !== ''">{{anime.nomeAlternativo}} — </span>
+
+        <v-tooltip top color="rgb(30,30,30)">
+          <template v-slot:activator="{on, attrs}">
+            <div style="cursor: default; display: inline-block" v-on="on" v-bind="attrs">
+              <span v-if="nota === ''"><v-btn style="color: #ff4a3b" icon loading></v-btn></span>
+              <span v-else-if="nota === null">Sem Nota</span>
+              <span v-else>{{nota}}<v-icon class="yellow--text" style="padding-bottom: 5px !important;">mdi-star</v-icon></span>
+            </div>
+          </template>
+          <span>{{quantidade}} pessoas votaram nesse Anime.</span>
+        </v-tooltip>
+        <br/>
         <v-btn v-for="(genero, g) in anime.generos" :key="g" :x-small="btnSmall"><v-icon>mdi-tag</v-icon>
           {{ genero.nome }}</v-btn>
       </div>
@@ -167,7 +174,8 @@ export default {
       {id: 10, label: '10 - Obra-Prima'}
     ],
     notaSelecionada: 0,
-    notaLoading: false
+    notaLoading: false,
+    quantidade: 0
   }),
   computed: {
     displayCover(){
@@ -191,6 +199,15 @@ export default {
     },
     btnSmall(){
       return this.$vuetify.breakpoint.name === 'xs';
+    }
+  },
+  watch: {
+    anime: {
+      handler: function (){
+        let img = document.getElementById('img');
+        setTimeout(() => img.classList.remove('img-animation-loading'), 10000);
+      },
+      deep: true
     }
   },
   methods: {
@@ -234,6 +251,7 @@ export default {
     getNota(){
       getRanking(this.anime._id).then((value) => {
         this.nota = value.data.nota;
+        this.quantidade = value.data.quantidade;
       });
     },
     async setVoto(){
@@ -304,17 +322,17 @@ $cover-height: 600px;
   transform: scale(1.05);
 }
 
-.img-animation::before {
+.img-animation-loading::before {
   content: '';
   position: absolute;
   width: 60%;
   height: 500px;
   background-color: #ff4a3d;
   z-index: 14;
-  animation: imgAnimation 4s linear infinite;
+  animation: imgAnimation 2s linear infinite;
 }
 
-.img-animation::after {
+.img-animation-loading::after {
   content: '';
   position: absolute;
   background-color: rgb(30,30,30);

@@ -4,10 +4,30 @@
       <h1>Episódio {{this.$props.numero}}</h1>
       <img :src="'/img/episodios/' + this.$props.thumb" alt=""/>
       <h2>{{this.$props.nome}}</h2>
-      <v-btn dark icon @click="assistirClick()"><v-icon>mdi-play</v-icon></v-btn>
-      <v-btn dark icon><v-icon>mdi-download</v-icon></v-btn><br/>
-      <v-btn dark icon color="red"><v-icon>mdi-heart-outline</v-icon></v-btn>
-      <v-btn dark icon><v-icon>mdi-comment-text-outline</v-icon></v-btn>
+      <v-tooltip top color="error">
+        <template v-slot:activator="{on,attrs}">
+          <v-btn dark icon @click="assistirClick()" v-bind="attrs" v-on="on"><v-icon>mdi-play</v-icon></v-btn>
+        </template>
+        <span>Assistir</span>
+      </v-tooltip>
+      <v-tooltip top color="error">
+        <template v-slot:activator="{on,attrs}">
+          <v-btn dark icon v-bind="attrs" v-on="on"><v-icon>mdi-download</v-icon></v-btn>
+        </template>
+        <span>Baixar Episódio</span>
+      </v-tooltip>
+      <v-tooltip top color="error">
+        <template v-slot:activator="{on,attrs}">
+          <v-btn dark icon color="red" v-bind="attrs" v-on="on"><v-icon>mdi-heart-outline</v-icon></v-btn>
+        </template> <!-- TODO implementar função de curtir os animes ou episodios -->
+        <span>Curtir</span>
+      </v-tooltip>
+      <v-tooltip top color="error">
+        <template v-slot:activator="{on,attrs}">
+          <v-btn dark icon v-bind="attrs" v-on="on"><v-icon>mdi-comment-text-outline</v-icon></v-btn>
+        </template>
+        <span>Comentar</span>
+      </v-tooltip>
     </div>
   </div>
 </template>
