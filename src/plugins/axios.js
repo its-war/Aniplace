@@ -41,10 +41,14 @@ export function listarAnimes(){
     return http.get('anime/listar', {headers: {'x-access-token': window.localStorage.getItem('token')}});
 }
 
-export function listarAnime(id){
-    return http.get('anime/listar/' + id, {headers: {'x-access-token': window.localStorage.getItem('token')}});
+export function listarAnime(idAnime, idUser){
+    return http.get('anime/listar/' + idAnime + '/' + idUser, {headers: {'x-access-token': window.localStorage.getItem('token')}});
 }
 
 export function getRanking(idAnime){
     return http.get('ranking/get/' + idAnime, {headers: {'x-access-token': window.localStorage.getItem('token')}});
+}
+
+export function votar(idAnime, idUser, nota){
+    return http.post('ranking/votar', {idAnime: idAnime, idUser: idUser, nota: nota}, {headers: {'x-access-token': window.localStorage.getItem('token')}});
 }

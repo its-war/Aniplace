@@ -32,13 +32,29 @@
         <h3>Nº de Temporadas: {{anime.temporada.length}}</h3>
         <h3>Total de Episódios: {{totalEpisodios()}}</h3>
         <h3>Total de Acessos: {{anime.acessos}}</h3>
+        <h3 v-if="notaSelecionada < 1">Avalie este anime:</h3>
+        <h3 v-else>Sua avaliação:</h3>
+        <v-select style="width: 250px" @change="setVoto()"
+            v-model="notaSelecionada"
+            :loading="notaLoading"
+            dark
+            filled
+            color="red"
+            item-color="red"
+            dense
+            prepend-icon="mdi-star"
+            :items="notasLabel"
+            label="Avaliar"
+            item-text="label"
+            item-value="id"
+        ></v-select>
         <v-btn :x-small="this.$vuetify.breakpoint.name === 'xs'" style="margin-right: 3px">
           <v-icon>mdi-plus</v-icon> Adicionar à Lista
         </v-btn>
         <v-btn :x-small="this.$vuetify.breakpoint.name === 'xs'" @click="episodioClick(1,1)">
           <v-icon>mdi-play-box</v-icon> Assistir
         </v-btn>
-      </div>
+      </div> <!-- TODO implementar um select com as notas para o usuario avaliar o anime -->
       <div class="temporada">
         <v-select style="width: 200px"
             v-model="temporadaSelecionada"
@@ -89,7 +105,7 @@
 <script>
 import EpisodioBox from "@/components/episodio/EpisodioBox";
 import SemelhanteBox from "@/components/episodio/SemelhanteBox";
-import {listarAnime, getRanking} from "@/plugins/axios";
+import {listarAnime, getRanking, votar} from "@/plugins/axios";
 
 export default {
   name: "AnimePageViewComponent",
@@ -137,7 +153,21 @@ export default {
       ]
     },
     temporadaSelecionada: 1,
-    nota: ''
+    nota: '',
+    notasLabel: [
+      {id: 1, label: '01 - Terrível'},
+      {id: 2, label: '02 - Horrível'},
+      {id: 3, label: '03 - Muito Ruim'},
+      {id: 4, label: '04 - Ruim'},
+      {id: 5, label: '05 - Regular'},
+      {id: 6, label: '06 - Bom'},
+      {id: 7, label: '07 - Muito Bom'},
+      {id: 8, label: '08 - Ótimo'},
+      {id: 9, label: '09 - Excelente'},
+      {id: 10, label: '10 - Obra-Prima'}
+    ],
+    notaSelecionada: 0,
+    notaLoading: false
   }),
   computed: {
     displayCover(){
@@ -175,7 +205,7 @@ export default {
       return total;
     },
     list(){
-      listarAnime(this.$route.params.id).then((value) => {
+      listarAnime(this.$route.params.id, this.$store.state.auth.user._id).then((value) => {
         if(value){
           this.anime = value.data.anime;
           window.document.title = this.anime.nome + ' — AniPlace';
@@ -183,6 +213,9 @@ export default {
             this.anime.temporada[i].label = this.anime.temporada[i].numero + "ª Temporada";
           }
           this.getNota();
+          if(value.data.nota.length > 0){
+            this.notaSelecionada = value.data.nota[0].nota;
+          }
         }
       });
     },
@@ -201,6 +234,14 @@ export default {
     getNota(){
       getRanking(this.anime._id).then((value) => {
         this.nota = value.data.nota;
+      });
+    },
+    async setVoto(){
+      this.notaLoading = true;
+      await votar(this.$route.params.id, this.$store.state.auth.user._id, this.notaSelecionada).then((value) => {
+        this.notaSelecionada = value.data.nota;
+        this.notaLoading = false;
+        this.getNota();
       });
     }
   },

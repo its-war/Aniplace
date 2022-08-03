@@ -11,7 +11,10 @@
                 {{genero.nome}} <span class="genero-spacer" v-if="j !== destaque.anime.generos.length - 1">—</span>
               </span>
           </h3>
-          <p :style="destaqueInfoStyle" v-if="nota[i] !== undefined">{{nota[i]}} <v-icon class="yellow--text" style="padding-bottom: 5px !important;">mdi-star</v-icon></p>
+          <p :style="destaqueInfoStyle">
+            <span v-show="nota[i] !== null">{{nota[i]}} <v-icon class="yellow--text" style="padding-bottom: 5px !important;">mdi-star</v-icon></span>
+            <span v-show="nota[i] === null">Sem Nota</span>
+          </p>
           <v-btn :x-small="btnStyle" icon dark><v-icon color="red">mdi-heart-outline</v-icon></v-btn>
           <v-btn @click="animePage(destaque.anime._id)" :x-small="btnStyle" icon dark><v-icon>mdi-redo</v-icon></v-btn>
         </div>
