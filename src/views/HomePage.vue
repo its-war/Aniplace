@@ -71,6 +71,51 @@
     </v-navigation-drawer>
     <v-main style="margin-bottom: 50px">
 
+      <v-dialog scrollable persistent max-width="330px" dark v-model="this.$store.state.main.notFound.enabled">
+        <v-card>
+          <v-card-title class="text-h5 red">
+            <v-icon>mdi-alert-circle</v-icon>
+            Página Não Encontrada
+          </v-card-title>
+          <v-card-text style="height: 400px">
+            {{this.$store.state.main.notFound.message}}
+            <v-divider v-show="showFormReport"></v-divider>
+            <v-form style="margin-top: 5px" v-show="showFormReport">
+              <v-textarea v-model="reportMsg" :rules="reportRules" label="Descreva o problema" outlined color="white" clearable counter="500"></v-textarea>
+              <v-btn
+                  :loading="reportLoading"
+                  @click="reportar()"
+                  :text="!reportLoading"
+                  color="red"
+              ><v-icon>mdi-alert</v-icon> Reportar</v-btn>
+              <v-btn
+                  @click="showFormReport = !showFormReport"
+                  text
+                  color="primary"
+              ><v-icon>mdi-close</v-icon> Cancelar</v-btn>
+            </v-form>
+          </v-card-text>
+          <v-divider></v-divider>
+          <v-card-actions>
+            <v-btn
+                v-show="!showFormReport"
+                x-large
+                text
+                @click="showFormReport = !showFormReport"
+                color="red"
+            ><v-icon>mdi-alert</v-icon> Reportar</v-btn>
+            <v-spacer></v-spacer>
+            <v-btn
+                :loading="this.$store.state.main.closeNotFoundLoading"
+                x-large
+                @click="closeNotFound()"
+                :text="!this.$store.state.main.closeNotFoundLoading"
+                color="red"
+            >OK <v-icon>mdi-check</v-icon></v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
       <v-snackbar width="50%" centered light timeout="-1" elevation="20" v-model="this.$store.state.auth.ativoSnackbar">
         <div style="text-align: center">
           {{this.$store.state.auth.ativoMsg}}
@@ -134,13 +179,21 @@ export default {
     drawer: false,
     group: null,
     appbardropdown: false,
-    pesquisa: ""
+    pesquisa: "",
+    showFormReport: false,
+    reportLoading: false,
+    reportMsg: '',
+    reportRules: [
+      v => !!v || 'Mensagem vazia.',
+      v => (v && v.length <= 500) || 'A mensagem deve ter no máximo 500 dígitos.'
+    ]
   }),
   methods: {
     ...mapActions('auth', ['ActionKillSession']),
     ...mapActions('auth', ['ActionSetAtivoSnackbar']),
     ...mapActions('auth', ['ActionSetAtivoMsg']),
     ...mapActions('main', ['ActionCloseDialogUpdate']),
+    ...mapActions('main', ['ActionCloseNotFound']),
     menuClick(nomeRota){
       if(this.$route.name !== nomeRota){
         this.$router.push({name: nomeRota});
@@ -178,6 +231,19 @@ export default {
     },
     closeUpdate(){
       this.ActionCloseDialogUpdate();
+    },
+    closeNotFound(){
+      this.ActionCloseNotFound();
+    },
+    reportar(){
+      this.reportLoading = true;
+      setTimeout(() => {
+        console.log(this.reportMsg);
+        this.reportLoading = false;
+        this.showFormReport = false;
+        this.reportMsg = '';
+        this.closeNotFound();
+      }, 2000);
     }
   },
   computed: {

@@ -17,6 +17,25 @@ export const ActionSetCloseDialogLoading = ({commit}, payload) => {
     commit(types.SET_CLOSE_DIALOG_LOADING, payload);
 }
 
+export const ActionSetNotFound = ({commit}, payload) => {
+    commit(types.SET_NOT_FOUND, payload);
+}
+
+export const ActionSetCloseNotFoundLoading = ({commit}, payload) => {
+    commit(types.SET_CLOSE_NOT_FOUND_LOADING, payload);
+}
+
+export const ActionNotFound = async ({dispatch}, payload) => {
+    await window._Vue.$router.replace({name: payload.routeName});
+    dispatch('ActionSetNotFound', {enabled: true, message: payload.msg});
+}
+
+export const ActionCloseNotFound = ({dispatch}) => {
+    dispatch('ActionSetCloseNotFoundLoading', true);
+    dispatch('ActionSetNotFound', {enabled: false, message: ''});
+    dispatch('ActionSetCloseNotFoundLoading', false);
+}
+
 export const ActionListarTopUsers = ({dispatch}) => {
     listarTopUsers().then((value) => {
         if(value){

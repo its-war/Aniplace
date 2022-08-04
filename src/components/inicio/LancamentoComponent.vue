@@ -1,7 +1,7 @@
 <template>
   <v-card dark :width="widthComponent" class="v-card-post">
     <v-card-title class="text-center">Episódio 1000</v-card-title>
-    <v-img width="100%" src="img/destaques/wallhaven-pkj7gm.png"/>
+    <v-img width="100%" src="img/destaques/wallhaven-pkj7gm.jpg"/>
     <v-card-subtitle><p style="height: 80px">{{anime}}</p></v-card-subtitle>
     <v-card-actions>
       <v-btn dark icon><v-icon>mdi-play</v-icon></v-btn>

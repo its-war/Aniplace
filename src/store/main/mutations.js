@@ -15,5 +15,13 @@ export default {
 
     [types.SET_CLOSE_DIALOG_LOADING] (state, payload){
         state.closeDialogLoading = payload;
+    },
+
+    [types.SET_NOT_FOUND] (state, payload){
+        state.notFound = payload;
+    },
+
+    [types.SET_CLOSE_NOT_FOUND_LOADING] (state, payload){
+        state.closeNotFoundLoading = payload;
     }
 }

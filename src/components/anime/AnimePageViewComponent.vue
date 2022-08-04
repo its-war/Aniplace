@@ -20,7 +20,9 @@
               <span v-else>{{nota}}<v-icon class="yellow--text" style="padding-bottom: 5px !important;">mdi-star</v-icon></span>
             </div>
           </template>
-          <span>{{quantidade}} pessoas votaram nesse Anime.</span>
+          <span v-if="quantidade < 1 || quantidade === undefined">Ninguém votou nesse Anime ainda.</span>
+          <span v-else-if="quantidade === 1">{{quantidade}} pessoa votou nesse Anime.</span>
+          <span v-else>{{quantidade}} pessoas votaram nesse Anime.</span>
         </v-tooltip>
         <br/>
         <v-btn v-for="(genero, g) in anime.generos" :key="g" :x-small="btnSmall"><v-icon>mdi-tag</v-icon>
@@ -55,10 +57,10 @@
             item-text="label"
             item-value="id"
         ></v-select>
-        <v-btn :x-small="this.$vuetify.breakpoint.name === 'xs'" style="margin-right: 3px">
+        <v-btn :x-small="this.$vuetify.breakpoint.name === 'xs'" :small="this.$vuetify.breakpoint.name === 'sm'" style="margin-right: 3px" :style="this.$vuetify.breakpoint.name === 'sm' ? 'margin-bottom: 5px' : ''">
           <v-icon>mdi-plus</v-icon> Adicionar à Lista
         </v-btn>
-        <v-btn :x-small="this.$vuetify.breakpoint.name === 'xs'" @click="episodioClick(1,1)">
+        <v-btn :x-small="this.$vuetify.breakpoint.name === 'xs'" :small="this.$vuetify.breakpoint.name === 'sm'" @click="episodioClick(1,1)">
           <v-icon>mdi-play-box</v-icon> Assistir
         </v-btn>
       </div> <!-- TODO implementar um select com as notas para o usuario avaliar o anime -->
@@ -113,6 +115,7 @@
 import EpisodioBox from "@/components/episodio/EpisodioBox";
 import SemelhanteBox from "@/components/episodio/SemelhanteBox";
 import {listarAnime, getRanking, votar} from "@/plugins/axios";
+import {mapActions} from "vuex";
 
 export default {
   name: "AnimePageViewComponent",
@@ -211,6 +214,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions('main', ['ActionNotFound']),
     episodioClick(temporada, numero){
       this.$router.push({name: 'Episódio', params: {id: this.anime._id, temporada: temporada, numero: numero}});
     },
@@ -223,15 +227,19 @@ export default {
     },
     list(){
       listarAnime(this.$route.params.id, this.$store.state.auth.user._id).then((value) => {
-        if(value){
-          this.anime = value.data.anime;
-          window.document.title = this.anime.nome + ' — AniPlace';
-          for(let i = 0; i < this.anime.temporada.length; i++){
-            this.anime.temporada[i].label = this.anime.temporada[i].numero + "ª Temporada";
-          }
-          this.getNota();
-          if(value.data.nota.length > 0){
-            this.notaSelecionada = value.data.nota[0].nota;
+        if(value.data.anime.isNotSet){
+          this.ActionNotFound({routeName: 'Animes', msg: 'Anime não encontrado. Se acredita que tentou buscar o anime certo, por favor, reporte este erro usando o botão abaixo, para que possamos resolvê-lo.'});
+        }else{
+          if(value){
+            this.anime = value.data.anime;
+            window.document.title = this.anime.nome + ' — AniPlace';
+            for(let i = 0; i < this.anime.temporada.length; i++){
+              this.anime.temporada[i].label = this.anime.temporada[i].numero + "ª Temporada";
+            }
+            this.getNota();
+            if(value.data.nota.length > 0){
+              this.notaSelecionada = value.data.nota[0].nota;
+            }
           }
         }
       });
@@ -388,7 +396,10 @@ $cover-height: 600px;
   float: right;
   width: 37%;
   padding-left: 35px;
+  padding-top: 15px;
+  padding-bottom: 15px;
   border-left: 3px solid #dfdfdf;
+  margin-bottom: 15px;
 }
 
 .temporada {

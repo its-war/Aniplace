@@ -3,11 +3,11 @@
     <div class="postagem-header red lighten-1">
       <div class="postagem-header-title">
         <h2 :style="tituloStyle"> <!-- 50 caracteres max -->
-          isso e uma postagem com varias palavras para testar palavra
+          isso e uma postagem com varias palavras para testar o título
         </h2>
       </div>
       <div class="postagem-header-author" :style="authorMargin">
-        <img src="/img/users/default.jpg"/>
+        <img src="/img/users/default.jpg" alt="Foto perfil do usuário"/>
         <span>Karlos Warney</span>
       </div>
     </div>
@@ -21,7 +21,7 @@
         </p>
       </div>
       <div class="postagem-body-img">
-        <img src="/img/destaques/wallhaven-pkj7gm.png">
+        <img src="/img/destaques/wallhaven-pkj7gm.jpg" alt="Thumbail da postagem">
       </div>
     </div>
     <div class="postagem-action">
@@ -136,6 +136,7 @@ export default {
 
 .postagem-body-img img {
   width: 90%;
+  border-radius: 10px;
 }
 
 .postagem-action {

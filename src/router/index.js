@@ -72,6 +72,7 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
   store.dispatch('main/ActionSetOverlay', true);
+  store.dispatch('main/ActionSetNotFound', {enabled: false, message: ''});
   let token = window.localStorage.getItem('token');
     validarLogin(token).then(value => {
       if(value.data.auth){

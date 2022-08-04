@@ -5,5 +5,10 @@ export default {
         enabled: false,
         text: []
     },
-    closeDialogLoading: false
+    closeDialogLoading: false,
+    notFound: {
+        enabled: false,
+        message: ""
+    },
+    closeNotFoundLoading: false
 }

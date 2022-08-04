@@ -4,21 +4,21 @@
       <div class="sizer">
         <h1 style="float: left; color: #FFFFFF;">Lançamentos</h1>
         <div class="lancamentos d-flex flex-wrap">
-          <LancamentoBox id="hjyj4ty864j65d4th8y4jhy" nome="Aquele anime lá" :temporada="1" :numero="1" thumb="wallhaven-pkj7gm.png"/>
-          <LancamentoBox id="hjyj4ty864j65d4th8y4jhy" nome="Aquele anime lá" :temporada="1" :numero="1" thumb="wallhaven-pkj7gm.png"/>
-          <LancamentoBox id="hjyj4ty864j65d4th8y4jhy" nome="Aquele anime lá" :temporada="1" :numero="1" thumb="wallhaven-pkj7gm.png"/>
-          <LancamentoBox id="hjyj4ty864j65d4th8y4jhy" nome="Aquele anime lá, lembra não?" :temporada="1" :numero="1" thumb="wallhaven-pkj7gm.png"/>
-          <LancamentoBox id="hjyj4ty864j65d4th8y4jhy" nome="Aquele anime lá" :temporada="1" :numero="1" thumb="wallhaven-pkj7gm.png"/>
-          <LancamentoBox id="hjyj4ty864j65d4th8y4jhy" nome="Aquele anime lá" :temporada="1" :numero="1" thumb="wallhaven-pkj7gm.png"/>
-          <LancamentoBox id="hjyj4ty864j65d4th8y4jhy" nome="Aquele anime lá" :temporada="1" :numero="1" thumb="wallhaven-pkj7gm.png"/>
-          <LancamentoBox id="hjyj4ty864j65d4th8y4jhy" nome="Aquele anime lá" :temporada="1" :numero="1" thumb="wallhaven-pkj7gm.png"/>
-          <LancamentoBox id="hjyj4ty864j65d4th8y4jhy" nome="Aquele anime lá" :temporada="1" :numero="1" thumb="wallhaven-pkj7gm.png"/>
-          <LancamentoBox id="hjyj4ty864j65d4th8y4jhy" nome="Aquele anime lá" :temporada="1" :numero="1" thumb="wallhaven-pkj7gm.png"/>
-          <LancamentoBox id="hjyj4ty864j65d4th8y4jhy" nome="Aquele anime lá" :temporada="1" :numero="1" thumb="wallhaven-pkj7gm.png"/>
-          <LancamentoBox id="hjyj4ty864j65d4th8y4jhy" nome="Aquele anime lá" :temporada="1" :numero="1" thumb="wallhaven-pkj7gm.png"/>
-          <LancamentoBox id="hjyj4ty864j65d4th8y4jhy" nome="Aquele anime lá" :temporada="1" :numero="1" thumb="wallhaven-pkj7gm.png"/>
-          <LancamentoBox id="hjyj4ty864j65d4th8y4jhy" nome="Aquele anime lá" :temporada="1" :numero="1" thumb="wallhaven-pkj7gm.png"/>
-          <LancamentoBox id="hjyj4ty864j65d4th8y4jhy" nome="Aquele anime lá" :temporada="1" :numero="1" thumb="wallhaven-pkj7gm.png"/>
+          <LancamentoBox id="hjyj4ty864j65d4th8y4jhy" nome="Aquele anime lá" :temporada="1" :numero="1" thumb="wallhaven-pkj7gm.jpg"/>
+          <LancamentoBox id="hjyj4ty864j65d4th8y4jhy" nome="Aquele anime lá" :temporada="1" :numero="1" thumb="wallhaven-pkj7gm.jpg"/>
+          <LancamentoBox id="hjyj4ty864j65d4th8y4jhy" nome="Aquele anime lá" :temporada="1" :numero="1" thumb="wallhaven-pkj7gm.jpg"/>
+          <LancamentoBox id="hjyj4ty864j65d4th8y4jhy" nome="Aquele anime lá, lembra não?" :temporada="1" :numero="1" thumb="wallhaven-pkj7gm.jpg"/>
+          <LancamentoBox id="hjyj4ty864j65d4th8y4jhy" nome="Aquele anime lá" :temporada="1" :numero="1" thumb="wallhaven-pkj7gm.jpg"/>
+          <LancamentoBox id="hjyj4ty864j65d4th8y4jhy" nome="Aquele anime lá" :temporada="1" :numero="1" thumb="wallhaven-pkj7gm.jpg"/>
+          <LancamentoBox id="hjyj4ty864j65d4th8y4jhy" nome="Aquele anime lá" :temporada="1" :numero="1" thumb="wallhaven-pkj7gm.jpg"/>
+          <LancamentoBox id="hjyj4ty864j65d4th8y4jhy" nome="Aquele anime lá" :temporada="1" :numero="1" thumb="wallhaven-pkj7gm.jpg"/>
+          <LancamentoBox id="hjyj4ty864j65d4th8y4jhy" nome="Aquele anime lá" :temporada="1" :numero="1" thumb="wallhaven-pkj7gm.jpg"/>
+          <LancamentoBox id="hjyj4ty864j65d4th8y4jhy" nome="Aquele anime lá" :temporada="1" :numero="1" thumb="wallhaven-pkj7gm.jpg"/>
+          <LancamentoBox id="hjyj4ty864j65d4th8y4jhy" nome="Aquele anime lá" :temporada="1" :numero="1" thumb="wallhaven-pkj7gm.jpg"/>
+          <LancamentoBox id="hjyj4ty864j65d4th8y4jhy" nome="Aquele anime lá" :temporada="1" :numero="1" thumb="wallhaven-pkj7gm.jpg"/>
+          <LancamentoBox id="hjyj4ty864j65d4th8y4jhy" nome="Aquele anime lá" :temporada="1" :numero="1" thumb="wallhaven-pkj7gm.jpg"/>
+          <LancamentoBox id="hjyj4ty864j65d4th8y4jhy" nome="Aquele anime lá" :temporada="1" :numero="1" thumb="wallhaven-pkj7gm.jpg"/>
+          <LancamentoBox id="hjyj4ty864j65d4th8y4jhy" nome="Aquele anime lá" :temporada="1" :numero="1" thumb="wallhaven-pkj7gm.jpg"/>
         </div>
       </div>
     </v-layout>
