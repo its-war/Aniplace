@@ -71,7 +71,7 @@
     </v-navigation-drawer>
     <v-main style="margin-bottom: 50px">
 
-      <v-dialog scrollable persistent max-width="330px" dark v-model="this.$store.state.main.notFound.enabled">
+      <v-dialog scrollable persistent :max-width="dialogWidth" dark v-model="this.$store.state.main.notFound.enabled">
         <v-card>
           <v-card-title class="text-h5 red">
             <v-icon>mdi-alert-circle</v-icon>
@@ -125,7 +125,7 @@
         </div>
       </v-snackbar>
 
-      <v-dialog scrollable persistent max-width="300px" dark v-model="this.$store.state.main.update.enabled">
+      <v-dialog scrollable persistent :max-width="dialogWidth" dark v-model="this.$store.state.main.update.enabled">
         <v-card>
           <v-card-title class="text-h5 red">Atualização</v-card-title>
           <v-card-text style="height: 300px">
@@ -288,6 +288,16 @@ export default {
         case "lg": return '';
         case "xl": return '';
         default: return '';
+      }
+    },
+    dialogWidth(){
+      switch (this.$vuetify.breakpoint.name){
+        case "xs": return '330px';
+        case "sm": return '400px';
+        case "md": return '500px';
+        case "lg": return '600px';
+        case "xl": return '700px';
+        default: return '330px';
       }
     }
   }
