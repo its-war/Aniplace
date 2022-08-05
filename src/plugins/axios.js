@@ -25,6 +25,15 @@ export function cadastro(nome, email, nomeusuario, senha, senhaRepetida){
     });
 }
 
+export function esqueceuSenha(nomeusuario, email, senha, senhaRepetida){
+    return http.put('usuario/esqueceuSenha', {
+        nomeusuario: nomeusuario,
+        email: email,
+        senha: senha,
+        senharepetida: senhaRepetida
+    });
+}
+
 export function listarDestaques(){
     return http.get('destaque/listar', {headers: {'x-access-token': window.localStorage.getItem('token')}});
 }

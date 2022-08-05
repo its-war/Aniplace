@@ -11,6 +11,7 @@ import AnimesComponent from "@/components/anime/AnimesComponent";
 const LoginPage = () => import("@/views/LoginPage");
 const CadastroPage = () => import("@/views/CadastroPage");
 const AtivadoPage = () => import("@/views/AtivadoPage");
+const EsqueceuSenhaPage = () => import("@/views/EsqueceuSenhaPage");
 const EpisodioPage = () => import("@/views/EpisodioPageComponent");
 
 Vue.use(VueRouter)
@@ -64,6 +65,11 @@ const routes = [
     component: CadastroPage
   },
   {
+    path: '/esqueceuSenha',
+    name: 'Esqueceu sua senha?',
+    component: EsqueceuSenhaPage
+  },
+  {
     path: '/video/:id/t/:temporada/ep/:numero',
     name: 'Episódio',
     component: EpisodioPage
@@ -82,11 +88,17 @@ router.beforeEach((to, from, next) => {
   store.dispatch('main/ActionSetNotFound', {enabled: false, message: ''});
   let token = window.localStorage.getItem('token');
     validarLogin(token).then(value => {
+      if(from.path === '/esqueceuSenha'){
+        store.dispatch('auth/ActionSetLoading', false);
+        store.dispatch('auth/ActionSetLoginErr', false);
+        store.dispatch('auth/ActionSetLoginMsg', '');
+      }
+
       if(value.data.auth){
         store.dispatch('main/ActionSetUpdate', value.data.update);
         store.dispatch('auth/ActionSetToken', token);
         store.dispatch('auth/ActionSetUser', value.data.user);
-        if(to.name === 'Login' || to.name === 'Cadastro' || to.name === 'Ativado'){
+        if(to.name === 'Login' || to.name === 'Cadastro' || to.name === 'Ativado' || to.path === '/esqueceuSenha'){
           window.document.title = "Home — AniPlace";
           next({name: 'Home'});
         }else{
@@ -94,7 +106,7 @@ router.beforeEach((to, from, next) => {
           next();
         }
       }else{
-        if(to.name === 'Login' || to.name === 'Cadastro' || to.name === 'Ativado'){
+        if(to.name === 'Login' || to.name === 'Cadastro' || to.name === 'Ativado' || to.path === '/esqueceuSenha'){
           window.document.title = to.name + " — AniPlace";
           next();
         }else{

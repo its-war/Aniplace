@@ -1,6 +1,5 @@
 import * as types from '@/store/auth/mutation-types';
-import {login} from '@/plugins/axios';
-import {cadastro} from "@/plugins/axios";
+import {login, cadastro, esqueceuSenha} from '@/plugins/axios';
 
 export const ActionSetUser = ({ commit }, payload) => {
     commit(types.SET_USER, payload);
@@ -99,4 +98,14 @@ export const ActionKillSession = ({dispatch}) => {
     dispatch('ActionSetLoading', false);
     dispatch('ActionSetLoginErr', false);
     window.localStorage.setItem('token', "");
+}
+
+export const ActionEsqueceuSenha = ({dispatch}, payload) => {
+    dispatch('ActionSetLoading', true);
+    esqueceuSenha(payload.usuario, payload.email, payload.senha, payload.senhaRepetida).then((value) => {
+        dispatch('ActionSetLoginMsg', value.data.msg);
+        dispatch('ActionSetLoginErr', true);
+    }).finally(() => {
+        dispatch('ActionSetLoading', false);
+    });
 }

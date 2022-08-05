@@ -31,7 +31,7 @@
                       v-on:keyup.enter="login()"
                       @click:append="passwordShow = !passwordShow"
                   ></v-text-field>
-                  <span class="esqueceu">Esqueceu sua senha?</span>
+                  <span class="esqueceu" @click="forgotPass()">Esqueceu sua senha?</span>
 
                   <v-checkbox v-model="lembrar" label="Lembrar de mim." dark color="red"
                               @click="snackbar = lembrar"></v-checkbox>
@@ -90,6 +90,9 @@ name: "LoginPage",
     },
     closeLoginErr(){
       this.ActionSetLoginErr(false);
+    },
+    forgotPass(){
+      this.$router.push({path: '/esqueceuSenha'});
     }
   },
   computed: {
