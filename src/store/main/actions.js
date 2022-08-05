@@ -25,6 +25,10 @@ export const ActionSetCloseNotFoundLoading = ({commit}, payload) => {
     commit(types.SET_CLOSE_NOT_FOUND_LOADING, payload);
 }
 
+export const ActionSetAnimes = ({commit}, payload) => {
+    commit(types.SET_ANIME, payload);
+}
+
 export const ActionNotFound = async ({dispatch}, payload) => {
     await window._Vue.$router.replace({name: payload.routeName});
     dispatch('ActionSetNotFound', {enabled: true, message: payload.msg});

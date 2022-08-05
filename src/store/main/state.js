@@ -10,5 +10,6 @@ export default {
         enabled: false,
         message: ""
     },
-    closeNotFoundLoading: false
+    closeNotFoundLoading: false,
+    animes: []
 }

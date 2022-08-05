@@ -195,7 +195,10 @@ export default {
     ...mapActions('main', ['ActionCloseDialogUpdate']),
     ...mapActions('main', ['ActionCloseNotFound']),
     menuClick(nomeRota){
-      if(this.$route.name !== nomeRota){
+      if(nomeRota === 'Animes'){
+        this.$router.push({name: 'Animes', params: {pagina: "1"}});
+        this.appbardropdown = false;
+      }else if(this.$route.name !== nomeRota){
         this.$router.push({name: nomeRota});
         this.appbardropdown = false;
       }else{

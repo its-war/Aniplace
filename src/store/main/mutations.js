@@ -23,5 +23,9 @@ export default {
 
     [types.SET_CLOSE_NOT_FOUND_LOADING] (state, payload){
         state.closeNotFoundLoading = payload;
+    },
+
+    [types.SET_ANIME] (state, payload){
+        state.animes = payload;
     }
 }

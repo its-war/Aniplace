@@ -7,6 +7,7 @@ import InicialComponent from "@/components/inicio/InicialComponent";
 import AnimesPageComponent from "@/components/anime/AnimesPageComponent";
 import AnimePageViewComponent from "@/components/anime/AnimePageViewComponent";
 import LancamentosPageComponent from "@/components/lancamento/LancamentosPageComponent";
+import AnimesComponent from "@/components/anime/AnimesComponent";
 const LoginPage = () => import("@/views/LoginPage");
 const CadastroPage = () => import("@/views/CadastroPage");
 const AtivadoPage = () => import("@/views/AtivadoPage");
@@ -25,9 +26,15 @@ const routes = [
         component: InicialComponent
       },
       {
-        path: 'animes',
-        name: 'Animes',
-        component: AnimesPageComponent
+        path: '',
+        component: AnimesPageComponent,
+        children: [
+          {
+            path: 'animes/p/:pagina',
+            name: 'Animes',
+            component: AnimesComponent
+          }
+        ]
       },
       {
         path: 'anime/:id',

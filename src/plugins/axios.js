@@ -37,8 +37,8 @@ export function updateUserVersion(){
     return http.put('usuario/updateVersion', {id: store.state.auth.user._id}, {headers: {'x-access-token': window.localStorage.getItem('token')}});
 }
 
-export function listarAnimes(){
-    return http.get('anime/listar', {headers: {'x-access-token': window.localStorage.getItem('token')}});
+export function listarAnimes(pagina){
+    return http.get('anime/listar/' + pagina, {headers: {'x-access-token': window.localStorage.getItem('token')}});
 }
 
 export function listarAnime(idAnime, idUser){

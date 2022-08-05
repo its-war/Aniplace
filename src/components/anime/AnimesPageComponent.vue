@@ -73,8 +73,11 @@
             <v-btn dark>Buscar</v-btn>
           </v-card-actions>
         </v-card>
-        <v-card dark class="animes-view d-flex flex-wrap">
-          <AnimeBox v-for="(anime, i) in animes" :key="i" :id="anime._id" :nome="anime.nome" :foto="anime.foto"/>
+
+        <router-view/>
+
+        <v-card dark style="margin-top: 20px">
+          <v-pagination @input="paginationNavigation()" color="red" v-model="paginaAtual" :length="paginator.totalPaginas" total-visible="7"></v-pagination>
         </v-card>
       </div>
     </v-layout>
@@ -82,14 +85,12 @@
 </template>
 
 <script>
-import AnimeBox from "@/components/anime/AnimeBox";
 import {listarAnimes} from "@/plugins/axios";
+import {mapActions} from "vuex";
 
 export default {
   name: "AnimesPageComponent",
-  components: {AnimeBox},
   data: () => ({
-    animes: [],
     anos: [
       {ano: 1998, id: 127},
       {ano: 1999, id: 126},
@@ -104,18 +105,44 @@ export default {
       {nome: 2001, _id: 124},
     ],
     generosSelecionados: [],
-    boardShow: true
+    boardShow: true,
+    paginator: {
+      totalAnimes: 0,
+      limit: 10,
+      totalPaginas: 0,
+      paginaAtual: 1,
+      slNo: 1,
+      temAnterior: false,
+      temProximo: false,
+      anterior: null,
+      proximo: null
+    },
+    paginaAtual: 1
   }),
+  watch: {
+    paginaAtual: {
+      handler: async function(){
+        this.list();
+      }
+    }
+  },
   methods: {
+    ...mapActions('main', ['ActionSetAnimes']),
     filtroPorLetra(letra){
       console.log(letra);
     },
-    listAll(){
-      listarAnimes().then((value) => {
+    list(){
+      listarAnimes(this.paginaAtual).then((value) => {
         if(value){
-          this.animes = value.data.animes;
+          this.ActionSetAnimes(value.data.animes);
+          this.paginator = value.data.paginator;
         }
       });
+    },
+    async paginationNavigation(){
+      if(this.paginaAtual !== parseInt(this.$route.params.pagina)){
+        await this.$router.push({name: 'Animes', params: {pagina: this.paginaAtual.toString()}});
+      }
     }
   },
   computed: {
@@ -158,7 +185,11 @@ export default {
     }
   },
   mounted() {
-    this.listAll();
+    if(this.paginaAtual === parseInt(this.$route.params.pagina)){
+      this.list();
+    }else{
+      this.paginaAtual = parseInt(this.$route.params.pagina);
+    }
   }
 }
 </script>
@@ -215,9 +246,5 @@ export default {
 
 .btn-letra button {
   margin: 5px;
-}
-
-.animes-view {
-  width: 100%;
 }
 </style>
