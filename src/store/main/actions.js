@@ -30,7 +30,7 @@ export const ActionSetAnimes = ({commit}, payload) => {
 }
 
 export const ActionNotFound = async ({dispatch}, payload) => {
-    await window._Vue.$router.replace({name: payload.routeName});
+    await window._Vue.$router.replace(payload.location);
     dispatch('ActionSetNotFound', {enabled: true, message: payload.msg});
 }
 
