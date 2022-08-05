@@ -228,7 +228,11 @@ export default {
     list(){
       listarAnime(this.$route.params.id, this.$store.state.auth.user._id).then((value) => {
         if(value.data.anime.isNotSet){
-          this.ActionNotFound({routeName: 'Animes', msg: 'Anime não encontrado. Se acredita que tentou buscar o anime certo, por favor, reporte este erro usando o botão abaixo, para que possamos resolvê-lo.'});
+          this.ActionNotFound({
+            location: {
+              name: 'Animes',
+              params: {pagina: "1"}
+            }, msg: 'Anime não encontrado. Se acredita que tentou buscar o anime certo, por favor, reporte este erro usando o botão abaixo, para que possamos resolvê-lo.'});
         }else{
           if(value){
             this.anime = value.data.anime;
