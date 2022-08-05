@@ -38,6 +38,10 @@ export const ActionSetAtivoSnackbar = ({commit}, payload) => {
     commit(types.SET_ATIVO_SNACKBAR, payload);
 }
 
+export const ActionSetCadastroClear = ({commit}, payload) => {
+    commit(types.SET_CADASTRO_CLEAR, payload);
+}
+
 export const ActionLogin = ({ dispatch }, payload) => {
     dispatch('ActionSetLoading', true);
     login(payload.usuario, payload.senha, payload.lembrar).then(value => {
@@ -70,22 +74,22 @@ export const ActionLogin = ({ dispatch }, payload) => {
     });
 }
 
-export const ActionCadastro = ({dispatch}, payload) => {
+export const ActionCadastro = async ({dispatch}, payload) => {
     dispatch('ActionSetLoading', true);
-    cadastro(payload.nome, payload.email, payload.nomeusuario, payload.senha, payload.senharepetida).then(value => {
+    await cadastro(payload.nome, payload.email, payload.nomeusuario, payload.senha, payload.senharepetida).then(value => {
         if(value.data.cadastro){
             dispatch('ActionSetLoading', false);
             dispatch('ActionSetCadastroMsg', "Cadastro realizado com sucesso. Acesse seu e-mail para ativar sua conta.");
             dispatch('ActionSetCadastroErr', true);
-            return true;
+            dispatch('ActionSetCadastroClear', true);
         }else{
             dispatch('ActionSetLoading', false);
             dispatch('ActionSetCadastroMsg', value.data.msg);
             dispatch('ActionSetCadastroErr', true);
-            return false;
+            dispatch('ActionSetCadastroClear', false);
         }
     }).catch(() => {
-        return false;
+        dispatch('ActionSetCadastroClear', false);
     });
 }
 

@@ -35,5 +35,9 @@ export default {
 
     [types.SET_ATIVO_SNACKBAR] (state, payload){
         state.ativoSnackbar = payload;
+    },
+
+    [types.SET_CADASTRO_CLEAR] (state, payload){
+        state.cadastroClear = payload;
     }
 }

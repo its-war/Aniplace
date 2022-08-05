@@ -107,16 +107,15 @@ export default {
     ...mapActions('auth', ['ActionKillSession']),
     ...mapActions('auth', ['ActionCadastro']),
     ...mapActions('auth', ['ActionSetCadastroErr']),
-    async cadastrar(){
-      if(await this.ActionCadastro({
+    ...mapActions('auth', ['ActionSetCadastroClear']),
+    cadastrar(){
+      this.ActionCadastro({
         nome: this.nome,
         email: this.email,
         nomeusuario: this.usuario,
         senha: this.senha,
         senharepetida: this.senhaRepetir
-      })){
-        this.resetForm();
-      }
+      });
     },
     nav(){
       this.ActionKillSession();
@@ -131,6 +130,12 @@ export default {
     },
     closeCadastroErr(){
       this.ActionSetCadastroErr(false);
+    }
+  },
+  updated() {
+    if(this.$store.state.auth.cadastroClear){
+      this.resetForm();
+      this.ActionSetCadastroClear(false);
     }
   }
 }

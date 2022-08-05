@@ -7,5 +7,6 @@ export default {
     cadastroErr: false,
     cadastroMsg: "",
     ativoMsg: "",
-    ativoSnackbar: false
+    ativoSnackbar: false,
+    cadastroClear: false
 }
