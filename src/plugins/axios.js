@@ -46,8 +46,8 @@ export function updateUserVersion(){
     return http.put('usuario/updateVersion', {id: store.state.auth.user._id}, {headers: {'x-access-token': window.localStorage.getItem('token')}});
 }
 
-export function listarAnimes(pagina){
-    return http.get('anime/listar/' + pagina, {headers: {'x-access-token': window.localStorage.getItem('token')}});
+export function listarAnimes(pagina, conditions, generos){
+    return http.post('anime/listar', {pagina: pagina, conditions: conditions, generos: generos}, {headers: {'x-access-token': window.localStorage.getItem('token')}});
 }
 
 export function listarAnime(idAnime, idUser){
@@ -60,4 +60,12 @@ export function getRanking(idAnime){
 
 export function votar(idAnime, idUser, nota){
     return http.post('ranking/votar', {idAnime: idAnime, idUser: idUser, nota: nota}, {headers: {'x-access-token': window.localStorage.getItem('token')}});
+}
+
+export function listarGeneros(){
+    return http.get('genero/listar', {headers: {'x-access-token': window.localStorage.getItem('token')}});
+}
+
+export function getMenorAno(){
+    return http.get('anime/getMenorAno', {headers: {'x-access-token': window.localStorage.getItem('token')}});
 }

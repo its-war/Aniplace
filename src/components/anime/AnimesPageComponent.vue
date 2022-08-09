@@ -5,23 +5,19 @@
       <div class="esquerda" :style="esquerdaStyle">
         <v-card dark class="form-filtro">
           <v-card-title :style="tituloStyle">Nome</v-card-title>
-          <v-text-field clearable filled label="Filtrar por nome"></v-text-field>
-          <v-btn :x-small="this.$vuetify.breakpoint.name === 'sm'" dark>Buscar</v-btn>
+          <v-text-field v-on:keyup.enter="find()" filled label="Filtrar por nome" v-model="search"></v-text-field>
+          <v-btn style="margin-right: 2px; margin-left: 2px" v-show="conditions.nome.length > 0 || generosSelecionados.length > 0 || conditions.letra !== '' || conditions.ano > 1" dark :x-small="this.$vuetify.breakpoint.name === 'sm'" @click="limparBusca()">Resetar Filtros</v-btn>
+          <v-btn :x-small="this.$vuetify.breakpoint.name === 'sm'" dark @click="find()">Buscar</v-btn>
 
           <v-card-title class="tituloBusca" :style="tituloStyle">
             Ano de <br v-if="this.$vuetify.breakpoint.name === 'sm'"/><br v-if="this.$vuetify.breakpoint.name === 'md'"/> Lançamento
           </v-card-title>
-          <v-select
-              v-model="anosSelecionados"
-              item-text="ano"
-              item-value="id"
+          <v-select @change="setAno()"
+              v-model="anoSelecionado"
               :items="anos"
               dark
               filled
               dense
-              multiple
-              chips
-              deletable-chips
               placeholder="Selecionar ano"></v-select>
 
           <v-card-title :style="tituloStyle">
@@ -38,33 +34,36 @@
       </div>
       <div class="direita" :style="direitaStyle">
         <v-card dark class="d-flex flex-wrap btn-letra">
-          <v-btn dark @click="filtroPorLetra('a')">#</v-btn>
-          <v-btn dark @click="filtroPorLetra('a')">A</v-btn>
-          <v-btn dark @click="filtroPorLetra('a')">B</v-btn>
-          <v-btn dark @click="filtroPorLetra('a')">C</v-btn>
-          <v-btn dark @click="filtroPorLetra('a')">D</v-btn>
-          <v-btn dark @click="filtroPorLetra('a')">E</v-btn>
-          <v-btn dark @click="filtroPorLetra('a')">F</v-btn>
-          <v-btn dark @click="filtroPorLetra('a')">G</v-btn>
-          <v-btn dark @click="filtroPorLetra('a')">H</v-btn>
-          <v-btn dark @click="filtroPorLetra('a')">I</v-btn>
-          <v-btn dark @click="filtroPorLetra('a')">J</v-btn>
-          <v-btn dark @click="filtroPorLetra('a')">K</v-btn>
-          <v-btn dark @click="filtroPorLetra('a')">L</v-btn>
-          <v-btn dark @click="filtroPorLetra('a')">M</v-btn>
-          <v-btn dark @click="filtroPorLetra('a')">N</v-btn>
-          <v-btn dark @click="filtroPorLetra('a')">O</v-btn>
-          <v-btn dark @click="filtroPorLetra('a')">P</v-btn>
-          <v-btn dark @click="filtroPorLetra('a')">Q</v-btn>
-          <v-btn dark @click="filtroPorLetra('a')">R</v-btn>
-          <v-btn dark @click="filtroPorLetra('a')">S</v-btn>
-          <v-btn dark @click="filtroPorLetra('a')">T</v-btn>
-          <v-btn dark @click="filtroPorLetra('a')">U</v-btn>
-          <v-btn dark @click="filtroPorLetra('a')">V</v-btn>
-          <v-btn dark @click="filtroPorLetra('a')">W</v-btn>
-          <v-btn dark @click="filtroPorLetra('a')">X</v-btn>
-          <v-btn dark @click="filtroPorLetra('a')">Y</v-btn>
-          <v-btn dark @click="filtroPorLetra('a')">Z</v-btn>
+          <v-btn-toggle color="red" v-model="btnGroup" class="d-inline-block">
+            <v-btn dark @click="filtroPorLetra('#')">#</v-btn>
+            <v-btn dark @click="filtroPorLetra('a')">A</v-btn>
+            <v-btn dark @click="filtroPorLetra('b')">B</v-btn>
+            <v-btn dark @click="filtroPorLetra('c')">C</v-btn>
+            <v-btn dark @click="filtroPorLetra('d')">D</v-btn>
+            <v-btn dark @click="filtroPorLetra('e')">E</v-btn>
+            <v-btn dark @click="filtroPorLetra('f')">F</v-btn>
+            <v-btn dark @click="filtroPorLetra('g')">G</v-btn>
+            <v-btn dark @click="filtroPorLetra('h')">H</v-btn>
+            <v-btn dark @click="filtroPorLetra('i')">I</v-btn>
+            <v-btn dark @click="filtroPorLetra('j')">J</v-btn>
+            <v-btn dark @click="filtroPorLetra('k')">K</v-btn>
+            <v-btn dark @click="filtroPorLetra('l')">L</v-btn>
+            <v-btn dark @click="filtroPorLetra('m')">M</v-btn>
+            <v-btn dark @click="filtroPorLetra('n')">N</v-btn>
+            <v-btn dark @click="filtroPorLetra('o')">O</v-btn>
+            <v-btn dark @click="filtroPorLetra('p')">P</v-btn>
+            <v-btn dark @click="filtroPorLetra('q')">Q</v-btn>
+            <v-btn dark @click="filtroPorLetra('r')">R</v-btn>
+            <v-btn dark @click="filtroPorLetra('s')">S</v-btn>
+            <v-btn dark @click="filtroPorLetra('t')">T</v-btn>
+            <v-btn dark @click="filtroPorLetra('u')">U</v-btn>
+            <v-btn dark @click="filtroPorLetra('v')">V</v-btn>
+            <v-btn dark @click="filtroPorLetra('w')">W</v-btn>
+            <v-btn dark @click="filtroPorLetra('x')">X</v-btn>
+            <v-btn dark @click="filtroPorLetra('y')">Y</v-btn>
+            <v-btn dark @click="filtroPorLetra('z')">Z</v-btn>
+          </v-btn-toggle>
+          <v-btn v-show="btnGroup !== null" dark @click="letraClear()">Resetar</v-btn>
         </v-card>
         <v-card dark class="btn-letra" :style="this.$vuetify.breakpoint.name === 'xs' ? '' : 'display: none'">
           <v-text-field dark filled clearable label="Nome"></v-text-field>
@@ -85,24 +84,17 @@
 </template>
 
 <script>
-import {listarAnimes} from "@/plugins/axios";
+import {listarAnimes, listarGeneros, getMenorAno} from "@/plugins/axios";
 import {mapActions} from "vuex";
+import {getAno} from "@/plugins/datahora";
 
 export default {
   name: "AnimesPageComponent",
   data: () => ({
-    anos: [
-      {ano: 1998, id: 127},
-      {ano: 1999, id: 126},
-      {ano: 2000, id: 125},
-      {ano: 2001, id: 124},
-    ],
-    anosSelecionados: [],
+    anos: [],
+    anoSelecionado: 1,
     generos: [
-      {nome: 1998, _id: 127},
-      {nome: 1999, _id: 126},
-      {nome: 2000, _id: 125},
-      {nome: 2001, _id: 124},
+      {_id: '', nome: ''}
     ],
     generosSelecionados: [],
     boardShow: true,
@@ -117,22 +109,59 @@ export default {
       anterior: null,
       proximo: null
     },
-    paginaAtual: 1
+    paginaAtual: 1,
+    btnGroup: null,
+    conditions: {
+      nome: '',
+      ano: 1,
+      letra: ''
+    },
+    letraSelecionada: '',
+    showClear: false,
+    search: '',
+    right: false
   }),
   watch: {
     paginaAtual: {
       handler: async function(){
         this.list();
       }
+    },
+    conditions: {
+      handler: function(){
+        if(!this.right){
+          this.buscar();
+        }
+      },
+      deep: true
+    },
+    generosSelecionados: {
+      handler: function(newValue, oldValue){
+        if(this.generosSelecionados.length > 0){
+          this.buscar();
+        }else{
+          if(newValue.length !== oldValue.length){
+            this.buscar();
+          }
+        }
+      }
     }
   },
   methods: {
     ...mapActions('main', ['ActionSetAnimes']),
     filtroPorLetra(letra){
-      console.log(letra);
+      if(this.conditions.letra === letra){
+        this.letraClear();
+      }else{
+        this.conditions.letra = letra;
+      }
+    },
+    letraClear(){
+      this.btnGroup = null;
+      this.conditions.letra = '';
     },
     list(){
-      listarAnimes(this.paginaAtual).then((value) => {
+      listarAnimes(this.paginaAtual, this.conditions, this.generosSelecionados).then((value) => {
         if(value){
           this.ActionSetAnimes(value.data.animes);
           this.paginator = value.data.paginator;
@@ -143,6 +172,46 @@ export default {
       if(this.paginaAtual !== parseInt(this.$route.params.pagina)){
         await this.$router.push({name: 'Animes', params: {pagina: this.paginaAtual.toString()}});
       }
+    },
+    getGeneros(){
+      listarGeneros().then((value) => {
+        this.generos = value.data.generos;
+        this.generosSelecionados = [];
+      });
+    },
+    limparBusca(){
+      this.left = true;
+      this.conditions.nome = '';
+      this.search = '';
+      this.conditions.letra = '';
+      this.anoSelecionado = 1;
+      this.conditions.ano = 1;
+      this.btnGroup = null;
+      if(this.generosSelecionados.length > 0){
+        this.right = true;
+        this.generosSelecionados = [];
+      }
+    },
+    setAno(){
+      this.conditions.ano = this.anoSelecionado;
+    },
+    find(){
+      this.conditions.nome = this.search;
+    },
+    buscar(){
+      if(this.paginaAtual === 1){
+        this.list();
+      }else{
+        this.paginaAtual = 1;
+        this.$router.push({name: 'Animes', params: {pagina: this.paginaAtual.toString()}});
+      }
+    },
+    populateAnos(){
+      getMenorAno().then((value) => {
+        for(let i = value.data.menorAno; i <= getAno() + 1; i++){
+          this.anos.push(i);
+        }
+      });
     }
   },
   computed: {
@@ -185,6 +254,8 @@ export default {
     }
   },
   mounted() {
+    this.populateAnos();
+    this.getGeneros();
     if(this.paginaAtual === parseInt(this.$route.params.pagina)){
       this.list();
     }else{

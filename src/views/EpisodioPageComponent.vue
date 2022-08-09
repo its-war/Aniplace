@@ -4,7 +4,7 @@
       <div class="player_sizer_main" ref="player">
         <vue-plyr class="player-box-main-style">
           <video controls crossorigin playsinline style="--plyr-color-main: red;">
-            <source size="720" type="video/mp4" :src="'https://aniplace-mysql.000webhostapp.com/video/zero06.mp4'"/>
+            <source size="720" type="video/mp4" :src="'https://www73.zippyshare.com/d/XHxPILDq/302/Highschool_DxD_12_Union-Anbient.mkv'"/>
           </video> <!-- https://aniplace-mysql.000webhostapp.com/video/zero06.mp4 '/video/' + episodio.video.src -->
         </vue-plyr>
         <v-btn
@@ -86,7 +86,7 @@ export default {
     },
     btnVoltarStyle: ''
   }),
-  mounted() {
+  mounted() {// TODO implementar funcionalidade de recurar o tempo que o usuário parou
     this.episodio.anime._id = this.$route.params.id;
 
     document.addEventListener('ready', (e) => {

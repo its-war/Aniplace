@@ -60,7 +60,7 @@
         <v-btn :x-small="this.$vuetify.breakpoint.name === 'xs'" :small="this.$vuetify.breakpoint.name === 'sm'" style="margin-right: 3px" :style="this.$vuetify.breakpoint.name === 'sm' ? 'margin-bottom: 5px' : ''">
           <v-icon>mdi-plus</v-icon> Adicionar à Lista
         </v-btn>
-        <v-btn :x-small="this.$vuetify.breakpoint.name === 'xs'" :small="this.$vuetify.breakpoint.name === 'sm'" @click="episodioClick(1,1)">
+        <v-btn v-show="anime.temporada[0].episodios.length > 0" :x-small="this.$vuetify.breakpoint.name === 'xs'" :small="this.$vuetify.breakpoint.name === 'sm'" @click="episodioClick(1,1)">
           <v-icon>mdi-play-box</v-icon> Assistir
         </v-btn>
       </div> <!-- TODO implementar um select com as notas para o usuario avaliar o anime -->
