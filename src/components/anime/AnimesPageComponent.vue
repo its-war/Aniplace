@@ -216,7 +216,6 @@ export default {
   },
   computed: {
     esquerdaStyle() {
-      //alert(this.$vuetify.breakpoint.width);
       switch (this.$vuetify.breakpoint.name) {
         case "xs":
           return {

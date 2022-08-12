@@ -69,3 +69,7 @@ export function listarGeneros(){
 export function getMenorAno(){
     return http.get('anime/getMenorAno', {headers: {'x-access-token': window.localStorage.getItem('token')}});
 }
+
+export function getEpisodio(idAnime, nTemporada, nEpisodio){
+    return http.get('episodio/get/' + idAnime + '/' + nTemporada + '/' + nEpisodio, {headers: {'x-access-token': window.localStorage.getItem('token')}});
+}

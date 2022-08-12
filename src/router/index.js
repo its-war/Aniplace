@@ -83,9 +83,16 @@ const router = new VueRouter({
   routes
 });
 
-router.beforeEach((to, from, next) => {
-  store.dispatch('main/ActionSetOverlay', true);
-  store.dispatch('main/ActionSetNotFound', {enabled: false, message: ''});
+router.beforeEach(async (to, from, next) => {
+  await store.dispatch('main/ActionSetOverlay', true);
+  await store.dispatch('main/ActionSetNotFound', {enabled: false, message: ''});
+  if(to.name === 'Episódio'){
+    await store.dispatch('episodio/ActionLoadEpisodio', {
+      idAnime: to.params.id,
+      temporada: to.params.temporada,
+      numero: to.params.numero
+    });
+  }
   let token = window.localStorage.getItem('token');
     validarLogin(token).then(value => {
       if(from.path === '/esqueceuSenha'){

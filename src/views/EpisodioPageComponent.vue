@@ -4,8 +4,8 @@
       <div class="player_sizer_main" ref="player">
         <vue-plyr class="player-box-main-style">
           <video controls crossorigin playsinline style="--plyr-color-main: red;">
-            <source size="720" type="video/mp4" :src="'https://www73.zippyshare.com/d/XHxPILDq/302/Highschool_DxD_12_Union-Anbient.mkv'"/>
-          </video> <!-- https://aniplace-mysql.000webhostapp.com/video/zero06.mp4 '/video/' + episodio.video.src -->
+            <source size="720" type="video/mp4" :src="'/video/' + this.$store.state.episodio.src"/>
+          </video>
         </vue-plyr>
         <v-btn
             dark
@@ -17,6 +17,26 @@
             @click="pularAbertura()"
             style="background-color: rgba(30,30,30,.39)"
         >Pular Abertura</v-btn>
+        <v-btn
+            dark
+            text
+            elevation="16"
+            outlined
+            v-show="showPularEncerramento"
+            class="pular"
+            @click="pularEncerramento()"
+            style="background-color: rgba(30,30,30,.39)"
+        >Pular Encerramento</v-btn>
+        <v-btn
+            dark
+            text
+            elevation="16"
+            outlined
+            v-show="showPularEncerramento && !disabledProximo"
+            class="proximo-episodio"
+            @click="proximo()"
+            style="background-color: rgba(30,30,30,.39)"
+        >Próximo Episódio</v-btn>
         <v-btn
             dark
             :style="isFullScreen && showFullScreenClose ? 'display: block;' : ''"
@@ -41,11 +61,11 @@
         ><v-icon>mdi-arrow-left</v-icon></v-btn>
       </div>
       <div class="subcontrols">
-        <v-btn dark style="float: left" :disabled="this.disabled.anterior"><v-icon>mdi-skip-backward</v-icon> Episódio Anterior</v-btn>
-        <v-btn @click="proximo()" dark style="float: right" :disabled="this.disabled.proximo">Próximo Episódio <v-icon>mdi-skip-forward</v-icon></v-btn>
+        <v-btn @click="anterior()" dark style="float: left" :disabled="disabledAnterior"><v-icon>mdi-skip-backward</v-icon> <span v-show="showBtnTitle">Episódio Anterior</span></v-btn>
+        <v-btn @click="proximo()" dark style="float: right" :disabled="disabledProximo"><span v-show="showBtnTitle">Próximo Episódio</span> <v-icon>mdi-skip-forward</v-icon></v-btn>
         <v-btn dark @click="fullScreenEnter()"><v-icon>mdi-fullscreen</v-icon></v-btn>
       </div>
-      <h2 style="color: #FFFFFF">{{this.episodio.anime.nome}} — Episódio {{this.$route.params.numero}}</h2>
+      <h2 style="color: #FFFFFF" :style="textStyle">{{this.$store.state.episodio.anime.nome}} <span v-if="this.$store.state.episodio.dados.nTemporadas > 1">— Temporada {{this.$route.params.temporada}}</span> — Episódio {{this.$route.params.numero}}</h2>
     </div>
   </v-container>
 </template>
@@ -63,31 +83,12 @@ export default {
     },
     player: null,
     showPularAbertura: false,
+    showPularEncerramento: false,
     showFullScreenClose: false,
     isFullScreen: false,
-    episodio: {
-      _id: 'fgf878755jj4qs25d',
-      anime: {
-        _id: 'ghg45484jhjg64ku8',
-        nome: "Zero no Tsukaima",
-        temporadas: 4
-      },
-      video: {
-        src: "hj588khjg5g665hj456hjh5.mkv",
-        thumb: "wallhaven-pkj7gm.png"
-      },
-      abertura: {
-        inicio: 70,
-        fim: 160
-      },
-      numero: 6,
-      temporada: 1,
-      totalEpisodios: 12
-    },
     btnVoltarStyle: ''
   }),
-  mounted() {// TODO implementar funcionalidade de recurar o tempo que o usuário parou
-    this.episodio.anime._id = this.$route.params.id;
+  async mounted() {// TODO implementar funcionalidade de recurar o tempo que o usuário parou
 
     document.addEventListener('ready', (e) => {
       this.player = e.detail.plyr;
@@ -97,16 +98,21 @@ export default {
       }, 2000);
 
       this.interval = setInterval(() => {
-        if(Math.floor(this.player.currentTime) >= this.episodio.abertura.inicio && Math.floor(this.player.currentTime) <= this.episodio.abertura.fim){
-          this.showPularAbertura = true;
-        }else{
-          this.showPularAbertura = false;
+        if(this.$store.state.episodio.dados.abertura.fim > 0){
+          this.showPularAbertura = Math.floor(this.player.currentTime) >= this.$store.state.episodio.dados.abertura.inicio && Math.floor(this.player.currentTime) <= this.$store.state.episodio.dados.abertura.fim;
+        }
+
+        if(this.$store.state.episodio.dados.encerramento.inicio > 0){
+          this.showPularEncerramento = Math.floor(this.player.currentTime) >= this.$store.state.episodio.dados.encerramento.inicio && Math.floor(this.player.currentTime) <= this.$store.state.episodio.dados.encerramento.fim;
         }
       }, 1000);
     });
 
-    this.disabledAnterior();
-    this.disabledProximo();
+    document.addEventListener('ended', () => {
+      if(!this.disabledProximo){
+        this.proximo();
+      }
+    });
 
     document.addEventListener('controlsshown', () => {
       this.showFullScreenClose = true;
@@ -139,7 +145,10 @@ export default {
   },
   methods: {
     pularAbertura(){
-      this.player.currentTime = this.episodio.abertura.fim + 1;
+      this.player.currentTime = this.$store.state.episodio.dados.abertura.fim + 1;
+    },
+    pularEncerramento(){
+      this.player.currentTime = this.$store.state.episodio.dados.encerramento.fim + 1;
     },
     fullScreenEnter(){
       screenfull.request(this.$refs.player);
@@ -148,7 +157,7 @@ export default {
       screenfull.exit();
     },
     async voltar(){
-      await this.$router.replace({name: 'Anime', params: {id: this.episodio.anime._id}});
+      await this.$router.replace({name: 'Anime', params: {id: this.$route.params.id}});
     },
     showBtnVoltar(opcao){
       switch (opcao){
@@ -165,29 +174,108 @@ export default {
         }
       }
     },
-    proximo(){
-      this.player.source = {
-        type: 'video',
-        title: 'episodio 7',
-        sources: [
-          {
-            src: '/video/ghj554kh1gf.mkv',
-            type: 'video/mp4',
-            size: 720
-          }
-        ]
-      };
+    async proximo(){
+      if(parseInt(this.$route.params.numero) < this.$store.state.episodio.dados.nEpisodios){
+        await this.$router.push({name: 'Episódio', params: {
+          id: this.$store.state.episodio.anime._id,
+          temporada: this.$route.params.temporada,
+          numero: (parseInt(this.$route.params.numero) + 1).toString()
+        }});
+        this.player.source = {
+          type: 'video',
+          sources: [
+            {
+              src: '/video/' + this.$store.state.episodio.anime.temporada[parseInt(this.$route.params.temporada) - 1].episodios[parseInt(this.$route.params.numero) - 1].online,
+              type: 'video/mp4',
+              size: 720
+            }
+          ]
+        }
+      }else if(parseInt(this.$route.params.temporada) < this.$store.state.episodio.dados.nTemporadas){
+        await this.$router.push({name: 'Episódio', params: {
+            id: this.$store.state.episodio.anime._id,
+            temporada: (parseInt(this.$route.params.temporada) + 1).toString(),
+            numero: '1'
+          }});
+        this.player.source = {
+          type: 'video',
+          sources: [
+            {
+              src: '/video/' + this.$store.state.episodio.anime.temporada[parseInt(this.$route.params.temporada) - 1].episodios[0].online,
+              type: 'video/mp4',
+              size: 720
+            }
+          ]
+        }
+      }
     },
-    disabledAnterior(){
-      this.disabled.anterior = Number.parseInt(this.$route.params.temporada) === 1 && Number.parseInt(this.$route.params.numero) === 1;
-    },
-    disabledProximo(){ //       se o episodio atual for o ultimo da temporada E se for a ultima temporada
-      this.disabled.proximo = this.episodio.totalEpisodios === Number.parseInt(this.$route.params.numero) && Number.parseInt(this.$route.params.temporada) === this.episodio.anime.temporadas;
+    async anterior(){
+      if(parseInt(this.$route.params.numero) > 1){
+        await this.$router.push({name: 'Episódio', params: {
+            id: this.$store.state.episodio.anime._id,
+            temporada: this.$route.params.temporada,
+            numero: (parseInt(this.$route.params.numero) - 1).toString()
+          }});
+        this.player.source = {
+          type: 'video',
+          sources: [
+            {
+              src: '/video/' + this.$store.state.episodio.anime.temporada[parseInt(this.$route.params.temporada) - 1].episodios[parseInt(this.$route.params.numero) - 1].online,
+              type: 'video/mp4',
+              size: 720
+            }
+          ]
+        }
+      }else if(parseInt(this.$route.params.temporada) > 1){
+        await this.$router.push({name: 'Episódio', params: {
+            id: this.$store.state.episodio.anime._id,
+            temporada: (parseInt(this.$route.params.temporada) - 1).toString(),
+            numero: (this.$store.state.episodio.anime.temporada[this.$store.state.episodio.anime.temporada.length - 2].episodios.length).toString()
+          }});
+        this.player.source = {
+          type: 'video',
+          sources: [
+            {
+              src: '/video/' + this.$store.state.episodio.anime.temporada[parseInt(this.$route.params.temporada) - 1].episodios[parseInt(this.$route.params.numero) - 1].online,
+              type: 'video/mp4',
+              size: 720
+            }
+          ]
+        }
+      }
     }
   },
   async beforeDestroy() {
     clearInterval(this.interval);
     await this.player.pause();
+  },
+  computed: {
+    disabledAnterior(){
+      return parseInt(this.$route.params.temporada) === 1 && parseInt(this.$route.params.numero) === 1;
+    },
+    disabledProximo(){ //       se o episodio atual for o ultimo da temporada E se for a ultima temporada
+      return parseInt(this.$route.params.temporada) === this.$store.state.episodio.dados.nTemporadas && parseInt(this.$route.params.numero) === this.$store.state.episodio.dados.nEpisodios;
+    },
+    textStyle(){
+      switch (this.$vuetify.breakpoint.name){
+        case "xs": return 'font-size: 12px !important; margin-top: 5px';
+        case "sm": return 'font-size: 16px !important;';
+        case "md": return '';
+        case "lg": return '';
+        case "xl": return '';
+        default: return '';
+      }
+    },
+    showBtnTitle(){
+      switch (this.$vuetify.breakpoint.name){
+        case "xs": return false;
+        case "sm": return false;
+        case "md": return true;
+        case "lg": return true;
+        case "xl": return true;
+        default: return true;
+      }
+    }
   }
 }
 </script>
@@ -217,6 +305,13 @@ body {
   position: absolute;
   z-index: 21;
   bottom: 30%;
+  right: 0;
+}
+
+.proximo-episodio {
+  position: absolute;
+  z-index: 21;
+  bottom: 50%;
   right: 0;
 }
 
