@@ -83,3 +83,7 @@ export function setEpisodioProgresso(idUser, idAnime, temporada, episodio, tempo
         tempo: tempo
     }, {headers: {'x-access-token': window.localStorage.getItem('token')}});
 }
+
+export function animesMaisAcessados(){
+    return http.get('anime/animesMaisAcessados', {headers: {'x-access-token': window.localStorage.getItem('token')}});
+}

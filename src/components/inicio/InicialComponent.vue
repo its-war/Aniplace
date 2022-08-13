@@ -31,7 +31,7 @@
       </v-main>
       <div class="main-direita" :style="direitaStyle">
         <div class="mais-votados">
-          <MaisVotadosComponent/>
+          <MaisAcessadosComponent/>
         </div>
         <div class="mais-votados">
           <TopUsuarios/>
@@ -44,12 +44,12 @@
 <script>
 import DestaquesComponent from "@/components/inicio/DestaquesComponent";
 import LancamentoComponent from "@/components/inicio/LancamentoComponent";
-import MaisVotadosComponent from "@/components/inicio/MaisVotadosComponent";
+import MaisAcessadosComponent from "@/components/inicio/MaisAcessadosComponent";
 import PostagemComponent from "@/components/inicio/PostagemComponent";
 import TopUsuarios from "@/components/inicio/TopUsuarios";
 export default {
   name: "InicialComponent",
-  components: {TopUsuarios, PostagemComponent, MaisVotadosComponent, LancamentoComponent, DestaquesComponent},
+  components: {TopUsuarios, PostagemComponent, MaisAcessadosComponent, LancamentoComponent, DestaquesComponent},
   computed: {
     esquerdaStyle(){
       switch (this.$vuetify.breakpoint.name){
