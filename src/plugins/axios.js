@@ -87,3 +87,7 @@ export function setEpisodioProgresso(idUser, idAnime, temporada, episodio, tempo
 export function animesMaisAcessados(){
     return http.get('anime/animesMaisAcessados', {headers: {'x-access-token': window.localStorage.getItem('token')}});
 }
+
+export function getLancamentos(){
+    return http.get('episodio/getLancamentos', {headers: {'x-access-token': window.localStorage.getItem('token')}});
+}

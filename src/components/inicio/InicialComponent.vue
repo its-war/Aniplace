@@ -13,13 +13,11 @@
           Ver Mais
         </v-btn>
         <div class="temporada d-flex flex-row mb-6">
-          <LancamentoComponent anime="Fullmetal Alchemist: Brotherhood"/>
-          <LancamentoComponent anime="Gintama"/>
-          <LancamentoComponent anime="Gintama Movie 2: Kanketsu-hen - Yorozuya yo Eien Nare"/>
-          <LancamentoComponent anime="Shouwa Genroku Rakugo Shinjuu: Sukeroku Futatabi-hen"/>
-          <LancamentoComponent anime="shimoneta to lu gainen ga sonzai shinai taiktsu na sekai apenas mais um teste pra ver como fica o espaço"/>
-          <LancamentoComponent anime="Code Geass"/>
-          <LancamentoComponent anime="Darling in The FranXX"/>
+          <LancamentoComponent v-for="(episodio, i) in episodios" :key="i" :id="episodio.anime._id"
+                               :nome="episodio.anime.nome"
+                               :numero="episodio.numero"
+                               :thumb="episodio.thumb"
+                               :temporada="episodio.temporada"/>
         </div>
         <div class="post">
           <PostagemComponent/>
@@ -47,9 +45,25 @@ import LancamentoComponent from "@/components/inicio/LancamentoComponent";
 import MaisAcessadosComponent from "@/components/inicio/MaisAcessadosComponent";
 import PostagemComponent from "@/components/inicio/PostagemComponent";
 import TopUsuarios from "@/components/inicio/TopUsuarios";
+import {getLancamentos} from "@/plugins/axios";
+
 export default {
   name: "InicialComponent",
   components: {TopUsuarios, PostagemComponent, MaisAcessadosComponent, LancamentoComponent, DestaquesComponent},
+  data: () => ({
+    episodios: [
+      {
+        _id: '',
+        thumb: '',
+        numero: 0,
+        temporada: 0,
+        anime: {
+          _id: '',
+          nome: ''
+        }
+      }
+    ]
+  }),
   computed: {
     esquerdaStyle(){
       switch (this.$vuetify.breakpoint.name){
@@ -95,7 +109,15 @@ export default {
   methods: {
     lancamentoPlus(){
       this.$router.push({name: 'Lançamentos'});
+    },
+    async listLancamentos(){
+      await getLancamentos().then((value) => {
+        this.episodios = value.data.episodios;
+      });
     }
+  },
+  mounted() {
+    this.listLancamentos();
   }
 }
 </script>
