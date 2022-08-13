@@ -73,3 +73,13 @@ export function getMenorAno(){
 export function getEpisodio(idAnime, nTemporada, nEpisodio){
     return http.get('episodio/get/' + idAnime + '/' + nTemporada + '/' + nEpisodio, {headers: {'x-access-token': window.localStorage.getItem('token')}});
 }
+
+export function setEpisodioProgresso(idUser, idAnime, temporada, episodio, tempo){
+    return http.post('episodio/setEpisodioProgresso', {
+        idUser: idUser,
+        idAnime: idAnime,
+        temporada: temporada,
+        episodio: episodio,
+        tempo: tempo
+    }, {headers: {'x-access-token': window.localStorage.getItem('token')}});
+}

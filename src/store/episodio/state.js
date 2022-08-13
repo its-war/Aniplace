@@ -36,6 +36,12 @@ export default {
         },
         tempo: 0,
         nTemporadas: 0,
-        nEpisodios: 0
+        nEpisodios: 0,
+        progresso: {
+            _id: '',
+            temporada: 1,
+            episodio: 1,
+            tempo: 0
+        }
     }
 }

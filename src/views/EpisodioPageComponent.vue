@@ -72,11 +72,14 @@
 
 <script>
 import screenfull from 'screenfull';
+import {setEpisodioProgresso} from "@/plugins/axios";
+
 export default {
   name: "EpisodioPageComponent",
   components: {},
   data: () => ({
     interval: 0,
+    intervalProgress: 0,
     disabled: {
       anterior: false,
       proximo: false
@@ -88,13 +91,18 @@ export default {
     isFullScreen: false,
     btnVoltarStyle: ''
   }),
-  async mounted() {// TODO implementar funcionalidade de recurar o tempo que o usuário parou
+  async mounted() {
 
     document.addEventListener('ready', (e) => {
       this.player = e.detail.plyr;
 
       setTimeout(() => {
         this.player.play();
+        if(this.$store.state.episodio.dados.progresso.tempo > 0 && this.$store.state.episodio.dados.progresso.episodio === parseInt(this.$route.params.numero) && this.$store.state.episodio.dados.progresso.temporada === parseInt(this.$route.params.temporada)) {
+          this.player.currentTime = this.$store.state.episodio.dados.progresso.tempo;
+        }else{
+          this.updateProgress();
+        }
       }, 2000);
 
       this.interval = setInterval(() => {
@@ -106,6 +114,10 @@ export default {
           this.showPularEncerramento = Math.floor(this.player.currentTime) >= this.$store.state.episodio.dados.encerramento.inicio && Math.floor(this.player.currentTime) <= this.$store.state.episodio.dados.encerramento.fim;
         }
       }, 1000);
+
+      this.intervalProgress = setInterval(() => {
+        this.updateProgress();
+      }, 60000);
     });
 
     document.addEventListener('ended', () => {
@@ -146,9 +158,11 @@ export default {
   methods: {
     pularAbertura(){
       this.player.currentTime = this.$store.state.episodio.dados.abertura.fim + 1;
+      this.updateProgress();
     },
     pularEncerramento(){
       this.player.currentTime = this.$store.state.episodio.dados.encerramento.fim + 1;
+      this.updateProgress();
     },
     fullScreenEnter(){
       screenfull.request(this.$refs.player);
@@ -157,6 +171,7 @@ export default {
       screenfull.exit();
     },
     async voltar(){
+      this.updateProgress();
       await this.$router.replace({name: 'Anime', params: {id: this.$route.params.id}});
     },
     showBtnVoltar(opcao){
@@ -208,6 +223,8 @@ export default {
           ]
         }
       }
+      this.player.currentTime = 0;
+      this.updateProgress();
     },
     async anterior(){
       if(parseInt(this.$route.params.numero) > 1){
@@ -243,10 +260,22 @@ export default {
           ]
         }
       }
+      this.player.currentTime = 0;
+      this.updateProgress();
+    },
+    updateProgress(){
+      setEpisodioProgresso(
+          this.$store.state.auth.user._id,
+          this.$route.params.id,
+          parseInt(this.$route.params.temporada),
+          parseInt(this.$route.params.numero),
+          Math.floor(this.player.currentTime)
+      ).then();
     }
   },
   async beforeDestroy() {
     clearInterval(this.interval);
+    clearInterval(this.intervalProgress);
     await this.player.pause();
   },
   computed: {

@@ -60,8 +60,10 @@
         <v-btn :x-small="this.$vuetify.breakpoint.name === 'xs'" :small="this.$vuetify.breakpoint.name === 'sm'" style="margin-right: 3px" :style="this.$vuetify.breakpoint.name === 'sm' ? 'margin-bottom: 5px' : ''">
           <v-icon>mdi-plus</v-icon> Adicionar à Lista
         </v-btn>
-        <v-btn v-show="anime.temporada[0].episodios.length > 0" :x-small="this.$vuetify.breakpoint.name === 'xs'" :small="this.$vuetify.breakpoint.name === 'sm'" @click="episodioClick(1,1)">
-          <v-icon>mdi-play-box</v-icon> Assistir
+        <v-btn v-show="anime.temporada[0].episodios.length > 0" :x-small="this.$vuetify.breakpoint.name === 'xs'" :small="this.$vuetify.breakpoint.name === 'sm'" @click="episodioClick(progresso.temporada, progresso.episodio)">
+          <v-icon>mdi-play-box</v-icon>
+          <span v-if="progresso.episodio === 1 && progresso.temporada === 1 && progresso.tempo === 0">Assistir</span>
+          <span v-else>Continuar</span>
         </v-btn>
       </div> <!-- TODO implementar um select com as notas para o usuario avaliar o anime -->
       <div class="temporada">
@@ -162,6 +164,12 @@ export default {
         }
       ]
     },
+    progresso: {
+      _id: '',
+      episodio: 1,
+      temporada: 1,
+      tempo: 0
+    },
     temporadaSelecionada: 1,
     nota: '',
     notasLabel: [
@@ -236,6 +244,7 @@ export default {
         }else{
           if(value){
             this.anime = value.data.anime;
+            this.progresso = value.data.progresso;
             window.document.title = this.anime.nome + ' — AniPlace';
             for(let i = 0; i < this.anime.temporada.length; i++){
               this.anime.temporada[i].label = this.anime.temporada[i].numero + "ª Temporada";
