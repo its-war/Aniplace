@@ -91,3 +91,11 @@ export function animesMaisAcessados(){
 export function getLancamentos(){
     return http.get('episodio/getLancamentos', {headers: {'x-access-token': window.localStorage.getItem('token')}});
 }
+
+export function listarLancamentos(pagina){
+    return http.get('episodio/listarLancamentos/' + pagina, {headers: {'x-access-token': window.localStorage.getItem('token')}});
+}
+
+export function fastSearch(value){
+    return http.get('anime/fastSearch/' + value, {headers: {'x-access-token': window.localStorage.getItem('token')}});
+}

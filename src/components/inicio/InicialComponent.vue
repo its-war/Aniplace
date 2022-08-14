@@ -108,7 +108,7 @@ export default {
   },
   methods: {
     lancamentoPlus(){
-      this.$router.push({name: 'Lançamentos'});
+      this.$router.push({name: 'Lançamentos', params: {pagina: '1'}});
     },
     async listLancamentos(){
       await getLancamentos().then((value) => {

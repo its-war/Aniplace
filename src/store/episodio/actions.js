@@ -17,6 +17,10 @@ export const ActionSetDados = ({commit}, payload) => {
     commit(types.SET_DADOS, payload);
 }
 
+export const ActionSetLancamentos = ({commit}, payload) => {
+    commit(types.SET_LANCAMENTOS, payload);
+}
+
 export const ActionLoadEpisodio = async ({dispatch}, {idAnime, temporada, numero}) => {
     await getEpisodio(idAnime, temporada, numero).then((value) => {
         dispatch('ActionSetSrc', value.data.src);

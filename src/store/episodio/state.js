@@ -43,5 +43,6 @@ export default {
             episodio: 1,
             tempo: 0
         }
-    }
+    },
+    lancamentos: []
 }

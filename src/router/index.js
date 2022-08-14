@@ -8,6 +8,7 @@ import AnimesPageComponent from "@/components/anime/AnimesPageComponent";
 import AnimePageViewComponent from "@/components/anime/AnimePageViewComponent";
 import LancamentosPageComponent from "@/components/lancamento/LancamentosPageComponent";
 import AnimesComponent from "@/components/anime/AnimesComponent";
+import LancamentosContainer from "@/components/lancamento/LancamentosContainer";
 const LoginPage = () => import("@/views/LoginPage");
 const CadastroPage = () => import("@/views/CadastroPage");
 const AtivadoPage = () => import("@/views/AtivadoPage");
@@ -43,9 +44,15 @@ const routes = [
         component: AnimePageViewComponent
       },
       {
-        path: 'lancamentos',
-        name: 'Lançamentos',
-        component: LancamentosPageComponent
+        path: '',
+        component: LancamentosPageComponent,
+        children: [
+          {
+            path: 'lancamentos/p/:pagina',
+            name: 'Lançamentos',
+            component: LancamentosContainer
+          }
+        ]
       }
     ]
   },

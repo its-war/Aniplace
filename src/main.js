@@ -64,6 +64,11 @@ Vue.use(VuePlyr, {
         {time: 14, label: "Teste de Capitulo 02"}
       ]
     },
+    captions: {
+      active: true,
+      language: 'en',
+      update: true
+    },
     controls: [
       'play-large',
       // 'restart',

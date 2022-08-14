@@ -3,7 +3,7 @@
     <div class="conteudo">
       <h1>Episódio {{this.$props.numero}}</h1>
       <img :src="'/img/episodios/' + this.$props.thumb" alt=""/>
-      <h2>{{this.$props.nome}}</h2>
+      <h2>{{this.$props.nome}} <span v-show="this.$props.temporada > 1">— Temporada {{this.$props.temporada}}</span></h2>
       <v-tooltip top color="error">
         <template v-slot:activator="{on,attrs}">
           <v-btn dark icon @click="assistirClick()" v-bind="attrs" v-on="on"><v-icon>mdi-play</v-icon></v-btn>

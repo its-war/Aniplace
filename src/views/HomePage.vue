@@ -8,11 +8,19 @@
             v-model="pesquisa"
             solo
             label="Pesquisar"
-            clearable
-        ></v-text-field> <!-- TODO criar e estruturar pagina de pesquisa  -->
-        <v-btn icon>
-          <v-icon>mdi-magnify</v-icon>
-        </v-btn>
+            append-icon="mdi-close"
+            @click:append="clearPesquisa()"
+            :loading="pesquisaLoading"
+            color="red"
+        ></v-text-field>
+        <div class="results">
+          <ResultSearchBox v-for="(result, i) in pesquisaResults" :key="i"
+              :id="result._id"
+              :nome="result.nome"
+              :ano="result.temporada[0].ano"
+              :generos="result.generos"
+              :foto="result.foto"/>
+        </div>
       </v-form>
       <div class="appbar-perfil">
         <div class="appbar-dropdown-activator" @click="appbardropdown = !appbardropdown">
@@ -172,14 +180,19 @@
 
 <script>
 import {mapActions} from "vuex";
+import {fastSearch} from "@/plugins/axios";
+import ResultSearchBox from "@/components/inicio/ResultSearchBox";
 
 export default {
   name: "HomePage",
+  components: {ResultSearchBox},
   data: () => ({
     drawer: false,
     group: null,
     appbardropdown: false,
     pesquisa: "",
+    pesquisaResults: [],
+    pesquisaLoading: false,
     showFormReport: false,
     reportLoading: false,
     reportMsg: '',
@@ -195,8 +208,8 @@ export default {
     ...mapActions('main', ['ActionCloseDialogUpdate']),
     ...mapActions('main', ['ActionCloseNotFound']),
     menuClick(nomeRota){
-      if(nomeRota === 'Animes'){
-        this.$router.push({name: 'Animes', params: {pagina: "1"}});
+      if(nomeRota === 'Animes' || nomeRota === 'Lançamentos'){
+        this.$router.push({name: nomeRota, params: {pagina: "1"}});
         this.appbardropdown = false;
       }else if(this.$route.name !== nomeRota){
         this.$router.push({name: nomeRota});
@@ -247,13 +260,38 @@ export default {
         this.reportMsg = '';
         this.closeNotFound();
       }, 2000);
+    },
+    clearPesquisa(){
+      this.pesquisa = '';
+      this.pesquisaResults = [];
+    }
+  },
+  watch: {
+    pesquisa: {
+      handler: function(){
+        if(this.pesquisa.length >= 3){
+          this.pesquisaLoading = true;
+          fastSearch(this.pesquisa).then((value) => {
+            this.pesquisaResults = value.data.results;
+            this.pesquisaLoading = false;
+          });
+        }else{
+          this.pesquisaResults = [];
+        }
+      }
+    },
+    $route: {
+      handler: function(){
+        this.pesquisa = '';
+        this.pesquisaResults = [];
+      }
     }
   },
   computed: {
     searchDisplay(){
       switch (this.$vuetify.breakpoint.name){
         case "xs": return 'display: none';
-        case "sm": return 'display: none';
+        case "sm": return '';
         case "md": return '';
         case "lg": return '';
         case "xl": return '';
@@ -330,11 +368,12 @@ export default {
   text-align: center;
   margin: auto;
   width: 30%;
+  position: relative;
 }
 
 .v-input {
   float: left;
-  width: 88%;
+  width: 100%;
   border-radius: 0 !important;
 }
 
@@ -344,6 +383,15 @@ export default {
   background-color: #1E1E1E;
   border-radius: 0 15% 15% 0;
   height: 50px !important;
+}
+
+.results {
+  position: absolute;
+  top: 48px;
+  background-color: rgb(30,30,30);
+  width: 100%;
+  max-height: 350px;
+  overflow: auto;
 }
 
 .appbar-perfil {

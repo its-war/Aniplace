@@ -15,5 +15,9 @@ export default {
 
     [types.SET_DADOS] (state, payload){
         state.dados = payload;
+    },
+
+    [types.SET_LANCAMENTOS] (state, payload){
+        state.lancamentos = payload;
     }
 }

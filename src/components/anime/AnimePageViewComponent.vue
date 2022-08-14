@@ -4,7 +4,7 @@
     <div class="anime-cover-sheet" :style="this.$vuetify.breakpoint.name === 'xs' ? 'display: none' : ''"></div>
     <div class="anime" :style="this.$vuetify.breakpoint.name === 'xs' ? 'margin-top: 0 !important' : ''">
       <div class="anime-foto" :style="animeFotoStyle">
-        <div class="img-animation img-animation-loading" id="img">
+        <div class="img-animation" id="img">
           <img :style="this.$vuetify.breakpoint.name === 'xs' ? 'width: 100% !important' : ''" :src="'/img/anime/' + anime.foto" alt="Foto do Anime"/>
         </div>
       </div>
@@ -65,7 +65,7 @@
           <span v-if="progresso.episodio === 1 && progresso.temporada === 1 && progresso.tempo === 0">Assistir</span>
           <span v-else>Continuar</span>
         </v-btn>
-      </div> <!-- TODO implementar um select com as notas para o usuario avaliar o anime -->
+      </div>
       <div class="temporada">
         <v-select style="width: 200px"
             v-model="temporadaSelecionada"
@@ -219,6 +219,11 @@ export default {
         setTimeout(() => img.classList.remove('img-animation-loading'), 10000);
       },
       deep: true
+    },
+    '$route.params.id': {
+      handler: function(){
+        this.list();
+      }
     }
   },
   methods: {
@@ -244,6 +249,8 @@ export default {
         }else{
           if(value){
             this.anime = value.data.anime;
+            let img = document.getElementById('img');
+            img.classList.add('img-animation-loading');
             this.progresso = value.data.progresso;
             window.document.title = this.anime.nome + ' — AniPlace';
             for(let i = 0; i < this.anime.temporada.length; i++){

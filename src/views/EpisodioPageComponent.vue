@@ -4,7 +4,9 @@
       <div class="player_sizer_main" ref="player">
         <vue-plyr class="player-box-main-style">
           <video controls crossorigin playsinline style="--plyr-color-main: red;">
-            <source size="720" type="video/mp4" :src="'/video/' + this.$store.state.episodio.src"/>
+            <source size="720" type="video/mp4" :src="'https://aniplace-mysql.000webhostapp.com/video/' + this.$store.state.episodio.src"/>
+            <source size="720" type="video/mp4" :src="'https://otakuland-server.000webhostapp.com/video/' + this.$store.state.episodio.src"/>
+            <track kind="captions" :src="'https://aniplace-mysql.000webhostapp.com/legendas/' + legenda() + '.vtt'" srclang="en" label="Português Brasil" default>
           </video>
         </vue-plyr>
         <v-btn
@@ -200,9 +202,23 @@ export default {
           type: 'video',
           sources: [
             {
-              src: '/video/' + this.$store.state.episodio.anime.temporada[parseInt(this.$route.params.temporada) - 1].episodios[parseInt(this.$route.params.numero) - 1].online,
+              src: 'https://aniplace-mysql.000webhostapp.com/video/' + this.$store.state.episodio.anime.temporada[parseInt(this.$route.params.temporada) - 1].episodios[parseInt(this.$route.params.numero) - 1].online,
               type: 'video/mp4',
               size: 720
+            },
+            {
+              src: 'https://otakuland-server.000webhostapp.com/video/' + this.$store.state.episodio.anime.temporada[parseInt(this.$route.params.temporada) - 1].episodios[parseInt(this.$route.params.numero) - 1].online,
+              type: 'video/mp4',
+              size: 720
+            }
+          ],
+          tracks: [
+            {
+              kind: 'captions',
+              label: 'English',
+              srclang: 'en',
+              src: 'https://aniplace-mysql.000webhostapp.com/legendas/' + this.legenda() + '.vtt',
+              default: true
             }
           ]
         }
@@ -216,9 +232,23 @@ export default {
           type: 'video',
           sources: [
             {
-              src: '/video/' + this.$store.state.episodio.anime.temporada[parseInt(this.$route.params.temporada) - 1].episodios[0].online,
+              src: 'https://aniplace-mysql.000webhostapp.com/video/' + this.$store.state.episodio.anime.temporada[parseInt(this.$route.params.temporada) - 1].episodios[0].online,
               type: 'video/mp4',
               size: 720
+            },
+            {
+              src: 'https://otakuland-server.000webhostapp.com/video/' + this.$store.state.episodio.anime.temporada[parseInt(this.$route.params.temporada) - 1].episodios[0].online,
+              type: 'video/mp4',
+              size: 720
+            }
+          ],
+          tracks: [
+            {
+              kind: 'captions',
+              label: 'English',
+              srclang: 'en',
+              src: 'https://aniplace-mysql.000webhostapp.com/legendas/' + this.legenda() + '.vtt',
+              default: true
             }
           ]
         }
@@ -237,9 +267,23 @@ export default {
           type: 'video',
           sources: [
             {
-              src: '/video/' + this.$store.state.episodio.anime.temporada[parseInt(this.$route.params.temporada) - 1].episodios[parseInt(this.$route.params.numero) - 1].online,
+              src: 'https://aniplace-mysql.000webhostapp.com/video/' + this.$store.state.episodio.anime.temporada[parseInt(this.$route.params.temporada) - 1].episodios[parseInt(this.$route.params.numero) - 1].online,
               type: 'video/mp4',
               size: 720
+            },
+            {
+              src: 'https://otakuland-server.000webhostapp.com/video/' + this.$store.state.episodio.anime.temporada[parseInt(this.$route.params.temporada) - 1].episodios[parseInt(this.$route.params.numero) - 1].online,
+              type: 'video/mp4',
+              size: 720
+            }
+          ],
+          tracks: [
+            {
+              kind: 'captions',
+              label: 'English',
+              srclang: 'en',
+              src: 'https://aniplace-mysql.000webhostapp.com/legendas/' + this.legenda() + '.vtt',
+              default: true
             }
           ]
         }
@@ -253,9 +297,23 @@ export default {
           type: 'video',
           sources: [
             {
-              src: '/video/' + this.$store.state.episodio.anime.temporada[parseInt(this.$route.params.temporada) - 1].episodios[parseInt(this.$route.params.numero) - 1].online,
+              src: 'https://aniplace-mysql.000webhostapp.com/video/' + this.$store.state.episodio.anime.temporada[parseInt(this.$route.params.temporada) - 1].episodios[parseInt(this.$route.params.numero) - 1].online,
               type: 'video/mp4',
               size: 720
+            },
+            {
+              src: 'https://otakuland-server.000webhostapp.com/video/' + this.$store.state.episodio.anime.temporada[parseInt(this.$route.params.temporada) - 1].episodios[parseInt(this.$route.params.numero) - 1].online,
+              type: 'video/mp4',
+              size: 720
+            }
+          ],
+          tracks: [
+            {
+              kind: 'captions',
+              label: 'English',
+              srclang: 'en',
+              src: 'https://aniplace-mysql.000webhostapp.com/legendas/' + this.legenda() + '.vtt',
+              default: true
             }
           ]
         }
@@ -271,6 +329,9 @@ export default {
           parseInt(this.$route.params.numero),
           Math.floor(this.player.currentTime)
       ).then();
+    },
+    legenda(){
+      return this.$store.state.episodio.src.split('.')[0];
     }
   },
   async beforeDestroy() {
