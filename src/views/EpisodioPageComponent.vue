@@ -344,7 +344,11 @@ export default {
       return parseInt(this.$route.params.temporada) === 1 && parseInt(this.$route.params.numero) === 1;
     },
     disabledProximo(){ //       se o episodio atual for o ultimo da temporada E se for a ultima temporada
-      return parseInt(this.$route.params.temporada) === this.$store.state.episodio.dados.nTemporadas && parseInt(this.$route.params.numero) === this.$store.state.episodio.dados.nEpisodios;
+      if(parseInt(this.$route.params.temporada) === this.$store.state.episodio.dados.nTemporadas && parseInt(this.$route.params.numero) === this.$store.state.episodio.dados.nEpisodios){
+        return true;
+      }else{
+        return this.$store.state.episodio.anime.temporada[parseInt(this.$route.params.temporada)].episodios.length < 1;
+      }
     },
     textStyle(){
       switch (this.$vuetify.breakpoint.name){
