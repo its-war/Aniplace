@@ -99,3 +99,7 @@ export function listarLancamentos(pagina){
 export function fastSearch(value){
     return http.get('anime/fastSearch/' + value, {headers: {'x-access-token': window.localStorage.getItem('token')}});
 }
+
+export function animesMaiorPontuacao(){
+    return http.get('anime/getAnimesMaiorPontuacao', {headers: {'x-access-token': window.localStorage.getItem('token')}});
+}

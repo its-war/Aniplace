@@ -22,11 +22,15 @@
               :foto="result.foto"/>
         </div>
       </v-form>
-      <div class="appbar-perfil">
+      <div class="appbar-perfil" v-click-outside="onClickOutside">
         <div class="appbar-dropdown-activator" @click="appbardropdown = !appbardropdown">
           <div class="left">
-            <img :src="getFoto()" alt="Imagem de usuário padrã." :style="fotoStyle"/>
-            <span :style="nomeDisplay">{{getFistName()}}</span>
+            <v-badge style="float: left" dot overlap offset-y="20" offset-x="0" color="red" avatar :value="1">
+              <v-avatar size="50px">
+                <img :src="getFoto()" alt="Imagem de usuário padrã." :style="fotoStyle"/>
+              </v-avatar>
+              <span :style="nomeDisplay">{{getFistName()}}</span>
+            </v-badge>
           </div>
           <div class="right" :style="nomeDisplay">
             <v-icon>mdi-chevron-down</v-icon>
@@ -193,6 +197,7 @@ export default {
     pesquisa: "",
     pesquisaResults: [],
     pesquisaLoading: false,
+    notifications: 0,
     showFormReport: false,
     reportLoading: false,
     reportMsg: '',
@@ -211,6 +216,9 @@ export default {
       if(nomeRota === 'Animes' || nomeRota === 'Lançamentos'){
         this.$router.push({name: nomeRota, params: {pagina: "1"}});
         this.appbardropdown = false;
+      }else if(nomeRota === 'Perfil'){
+        this.appbardropdown = false;
+        this.$router.push({name: nomeRota, params: {id: this.$store.state.auth.user._id}});
       }else if(this.$route.name !== nomeRota){
         this.$router.push({name: nomeRota});
         this.appbardropdown = false;
@@ -264,6 +272,9 @@ export default {
     clearPesquisa(){
       this.pesquisa = '';
       this.pesquisaResults = [];
+    },
+    onClickOutside(){
+      this.appbardropdown = false;
     }
   },
   watch: {
@@ -418,7 +429,6 @@ export default {
 .appbar-perfil img {
   width: 50px;
   height: 50px;
-  float: left;
   margin-right: 3px;
   border-radius: 50%;
 }

@@ -42,9 +42,9 @@ export default {
         case "xs": return '80%';
         case "sm": return '80%';
         case "md": return 550;
-        case "lg": return '22%';
-        case "xl": return '22%';
-        default: return '22%';
+        case "lg": return '18%';
+        case "xl": return '18%';
+        default: return '18%';
       }
     }
   },
@@ -59,5 +59,11 @@ export default {
 <style scoped>
 .v-card-post {
   margin: 5px 0 5px 10px;
+  border: 1px solid transparent;
+  transition: 200ms;
+}
+
+.v-card-post:hover {
+  border-color: #ff4a3b;
 }
 </style>

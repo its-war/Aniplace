@@ -2,17 +2,12 @@
   <v-card dark class="postagem">
     <div class="postagem-header red lighten-1">
       <div class="postagem-header-title">
-        <h2 :style="tituloStyle"> <!-- 50 caracteres max -->
-          isso e uma postagem com varias palavras para testar o título
-        </h2>
       </div>
       <div class="postagem-header-author" :style="authorMargin">
         <img src="/img/users/default.jpg" alt="Foto perfil do usuário"/>
         <span>Karlos Warney</span>
+        <p>15/06/2022 — 15h29</p>
       </div>
-    </div>
-    <div class="postagem-header-time">
-      <span>15/06/2022 — 15h29</span>
     </div>
     <div class="postagem-body">
       <div class="postagem-body-text">
@@ -21,7 +16,7 @@
         </p>
       </div>
       <div class="postagem-body-img">
-        <img src="/img/destaques/wallhaven-pkj7gm.jpg" alt="Thumbail da postagem">
+        <img src="/img/destaques/wallhaven-pkj7gm.jpg" alt="Thumbnail da postagem">
       </div>
     </div>
     <div class="postagem-action">
@@ -78,7 +73,7 @@ export default {
 }
 
 .postagem-header {
-  height: 100px;
+  height: 35px;
   width: 100%;
   border-radius: 0 0 100px 100px;
   padding-top: 5px;
@@ -86,29 +81,24 @@ export default {
 
 .postagem-header-author {
   float: left;
-  margin-left: 10%;
-  padding: 0;
-  width: 250px;
-  height: 80px;
 }
 
 .postagem-header-author img {
   width: 50px;
   border-radius: 50%;
-  margin-top: 32px;
-  margin-left: -60px;
   position: absolute;
 }
 
 .postagem-header-author span {
+  margin-left: 53px;
   position: relative;
-  margin-left: -5px;
-  line-height: 100px;
+  line-height: 40px;
 }
 
-.postagem-header-time {
-  float: left;
-  margin-left: -180px;
+.postagem-header-author p {
+  position: relative;
+  margin-left: 90px;
+  margin-top: -15px;
 }
 
 .postagem-body-text {

@@ -2,12 +2,12 @@
   <v-container fill-height fluid>
     <v-layout align-center style="display: block">
       <DestaquesComponent class="slider" :style="sliderMargin"/>
-      <v-main class="timeline" :style="esquerdaStyle">
-        <h1 :style="tituloStyle">Ultimos Lançamentos</h1>
+      <h1 :style="tituloStyle" style="color: #ffffff; margin-top: 50px; text-align: left; margin-left: 50px">Ultimos Lançamentos</h1>
+      <div class="temporada-sizer">
         <v-btn
             @click="lancamentoPlus()"
             dark
-            style="float: right; margin-top: 4px; margin-right: -13px"
+            style="float: right; margin-right: 2.5%"
         >
           <v-icon>mdi-plus</v-icon>
           Ver Mais
@@ -19,12 +19,22 @@
                                :thumb="episodio.thumb"
                                :temporada="episodio.temporada"/>
         </div>
+      </div>
+      <v-main class="timeline" :style="esquerdaStyle">
         <div class="post">
-          <PostagemComponent/>
-          <PostagemComponent/>
-          <PostagemComponent/>
-          <PostagemComponent/>
-          <PostagemComponent/>
+          <div style="width: 60%; float: right">
+            <NewPostComponent/>
+            <PostUserComponent/>
+            <PostUserComponent/>
+            <PostUserComponent/>
+            <PostUserComponent/>
+            <PostUserComponent/>
+            <PostUserComponent/>
+            <PostUserComponent/>
+            <PostUserComponent/>
+            <PostUserComponent/>
+            <PostUserComponent/>
+          </div>
         </div>
       </v-main>
       <div class="main-direita" :style="direitaStyle">
@@ -33,6 +43,9 @@
         </div>
         <div class="mais-votados">
           <TopUsuarios/>
+        </div>
+        <div class="mais-votados">
+          <AnimesMaisVotados/>
         </div>
       </div>
     </v-layout>
@@ -43,13 +56,19 @@
 import DestaquesComponent from "@/components/inicio/DestaquesComponent";
 import LancamentoComponent from "@/components/inicio/LancamentoComponent";
 import MaisAcessadosComponent from "@/components/inicio/MaisAcessadosComponent";
-import PostagemComponent from "@/components/inicio/PostagemComponent";
 import TopUsuarios from "@/components/inicio/TopUsuarios";
 import {getLancamentos} from "@/plugins/axios";
+import AnimesMaisVotados from "@/components/inicio/AnimesMaisVotados";
+import NewPostComponent from "@/components/postagem/NewPostComponent";
+import PostUserComponent from "@/components/postagem/PostUserComponent";
 
 export default {
   name: "InicialComponent",
-  components: {TopUsuarios, PostagemComponent, MaisAcessadosComponent, LancamentoComponent, DestaquesComponent},
+  components: {
+    PostUserComponent,
+    NewPostComponent,
+    AnimesMaisVotados,
+    TopUsuarios, MaisAcessadosComponent, LancamentoComponent, DestaquesComponent},
   data: () => ({
     episodios: [
       {
@@ -142,12 +161,17 @@ export default {
   float: left;
 }
 
-.temporada {
+.temporada-sizer {
   width: 100%;
+  margin-bottom: -50px;
+}
+
+.temporada {
+  width: 95%;
+  margin: auto;
   background-color: #34343499;
   overflow-x: auto;
-  float: left;
-  margin-left: 13px;
+  position: relative;
 }
 
 .mais-votados {

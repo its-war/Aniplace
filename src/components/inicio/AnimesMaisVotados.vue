@@ -1,10 +1,10 @@
 <template>
-  <v-card class="v-card-acessados" dark height="350px">
-    <v-subheader>Top Animes Mais Acessados</v-subheader>
+  <v-card dark height="350px" class="v-card-mais-votados">
+    <v-subheader>Animes com Melhores Pontuações</v-subheader>
     <div style="overflow-y: auto; height: 100%">
       <v-list>
         <v-list-item v-for="(anime, i) in animes" :key="i" @click="animeClick(anime._id)" :title="anime.nome">
-          <v-list-item-icon>{{i + 1}}º</v-list-item-icon>
+          <v-list-item-icon>{{anime.nota.toFixed(2)}}<v-icon color="yellow">mdi-star</v-icon></v-list-item-icon>
           <v-list-item-title :style="tituloStyle">
             {{anime.nome}}
           </v-list-item-title>
@@ -15,18 +15,10 @@
 </template>
 
 <script>
-import {animesMaisAcessados} from "@/plugins/axios";
+import {animesMaiorPontuacao} from "@/plugins/axios";
 
 export default {
-  name: "MaisAcessadosComponent",
-  data: () => ({
-    animes: [
-      {
-        _id: '',
-        nome: ''
-      }
-    ]
-  }),
+  name: "AnimesMaisVotados",
   computed: {
     tituloStyle(){
       switch (this.$vuetify.breakpoint.name){
@@ -38,8 +30,17 @@ export default {
       }
     }
   },
+  data: () => ({
+    animes: [
+      {
+        _id: '',
+        nome: '',
+        nota: 0
+      }
+    ]
+  }),
   async mounted() {
-    await animesMaisAcessados().then((value) => {
+    await animesMaiorPontuacao().then((value) => {
       this.animes = value.data.animes;
     });
   },
@@ -52,7 +53,7 @@ export default {
 </script>
 
 <style scoped>
-.v-card-acessados {
+.v-card-mais-votados {
   width: 80%;
 }
 </style>

@@ -9,6 +9,7 @@ import AnimePageViewComponent from "@/components/anime/AnimePageViewComponent";
 import LancamentosPageComponent from "@/components/lancamento/LancamentosPageComponent";
 import AnimesComponent from "@/components/anime/AnimesComponent";
 import LancamentosContainer from "@/components/lancamento/LancamentosContainer";
+import PerfilPageComponent from "@/components/perfil/PerfilPageComponent";
 const LoginPage = () => import("@/views/LoginPage");
 const CadastroPage = () => import("@/views/CadastroPage");
 const AtivadoPage = () => import("@/views/AtivadoPage");
@@ -53,6 +54,11 @@ const routes = [
             component: LancamentosContainer
           }
         ]
+      },
+      {
+        path: 'perfil/:id',
+        name: 'Perfil',
+        component: PerfilPageComponent
       }
     ]
   },
