@@ -25,7 +25,7 @@
       <div class="appbar-perfil" v-click-outside="onClickOutside">
         <div class="appbar-dropdown-activator" @click="appbardropdown = !appbardropdown">
           <div class="left">
-            <v-badge style="float: left" dot overlap offset-y="20" offset-x="0" color="red" avatar :value="1">
+            <v-badge style="float: left" dot overlap offset-y="20" offset-x="0" color="red" avatar :value="countSolicitacoes">
               <v-avatar size="50px">
                 <img :src="getFoto()" alt="Imagem de usuário padrã." :style="fotoStyle"/>
               </v-avatar>
@@ -37,6 +37,9 @@
           </div>
         </div>
         <v-list class="appbar-dropdown" v-show="appbardropdown" :style="dropdownStyle">
+          <v-list-item @click="solicitacao = true">
+            <v-list-item-title :style="newSolicitacoes > 0 ? 'color: #ff4a3b' : ''">Solicitações</v-list-item-title>
+          </v-list-item>
           <v-list-item @click="menuClick('Perfil')">
             <v-list-item-title>Perfil</v-list-item-title>
           </v-list-item>
@@ -137,6 +140,18 @@
         </div>
       </v-snackbar>
 
+      <v-snackbar bottom light timeout="10000" elevation="20" v-model="solicitacaoNotification">
+        <div style="text-align: center">
+          Nova solicitação de amizade.
+          <v-btn color="red" text @click="closeSolicitacaoNotification()">
+            Ver <v-icon>mdi-redo</v-icon>
+          </v-btn>
+        </div>
+        <v-btn style="position: absolute; top: 0; right: 0" color="red" dark icon @click="solicitacaoNotification = false">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+      </v-snackbar>
+
       <v-dialog scrollable persistent :max-width="dialogWidth" dark v-model="this.$store.state.main.update.enabled">
         <v-card>
           <v-card-title class="text-h5 red">Atualização</v-card-title>
@@ -162,6 +177,28 @@
         </v-card>
       </v-dialog>
 
+      <v-dialog scrollable :max-width="dialogWidth" dark v-model="solicitacao">
+        <v-card>
+          <v-card-title style="margin-bottom: -50px" class="text-h5 red">Solicitações de Amizade</v-card-title>
+          <v-btn dark icon style="position: absolute; top: 0; right: 0" @click="solicitacao = false"><v-icon>mdi-close</v-icon></v-btn>
+          <div style="height: 300px">
+            <v-list style="text-align: left">
+              <v-list-item v-for="(s, i) in solicitacoes" :key="i">
+                <div v-if="solicitacoes.length > 0">
+                  <v-avatar style="margin-right: 3px">
+                    <img :src="getFotoSolicitacao()" :alt="s.nome"/>
+                  </v-avatar>
+                  <span>{{s.nome}}</span>
+                  <v-btn dark icon color="success"><v-icon>mdi-check</v-icon></v-btn>
+                  <v-btn dark icon color="red"><v-icon>mdi-close</v-icon></v-btn>
+                </div>
+              </v-list-item>
+              <div v-if="solicitacoes.length <= 0" style="padding: 20px">Ainda não há solicitações de amizade.</div>
+            </v-list>
+          </div>
+        </v-card>
+      </v-dialog>
+
       <router-view/>
 
     </v-main>
@@ -184,7 +221,7 @@
 
 <script>
 import {mapActions} from "vuex";
-import {fastSearch} from "@/plugins/axios";
+import {fastSearch, getSolicitacoes, getSolicitacao} from "@/plugins/axios";
 import ResultSearchBox from "@/components/inicio/ResultSearchBox";
 
 export default {
@@ -197,7 +234,10 @@ export default {
     pesquisa: "",
     pesquisaResults: [],
     pesquisaLoading: false,
-    notifications: 0,
+    solicitacao: false,
+    solicitacoes: [],
+    newSolicitacoes: 0,
+    solicitacaoNotification: false,
     showFormReport: false,
     reportLoading: false,
     reportMsg: '',
@@ -240,6 +280,9 @@ export default {
         return '/img/users/default.jpg';
       }
     },
+    getFotoSolicitacao(foto){
+      return foto===null?'/img/users/perfil/'+foto:'/img/users/default.jpg';
+    },
     getFistName(){
       return this.$store.state.auth.user.fistname;
     },
@@ -275,6 +318,10 @@ export default {
     },
     onClickOutside(){
       this.appbardropdown = false;
+    },
+    closeSolicitacaoNotification(){
+      this.solicitacaoNotification = false;
+      this.solicitacao = true;
     }
   },
   watch: {
@@ -348,7 +395,40 @@ export default {
         case "xl": return '700px';
         default: return '330px';
       }
+    },
+    countSolicitacoes(){
+      if(this.newSolicitacoes > 0){
+        return 1;
+      }else{
+        return 0;
+      }
     }
+  },
+  sockets: {
+    solicitacao: function(data){
+      if(data.para === this.$store.state.auth.user._id){
+        getSolicitacao(data.id).then((value) => {
+          this.solicitacoes.push(value.data.solicitacao.de);
+          this.newSolicitacoes++;
+          this.solicitacaoNotification = true;
+          console.log('solicitou');
+        });
+      }
+    },
+    connect: function(){
+      this.$socket.emit('saveIdSocket', {id: this.$store.state.auth.user._id});
+    },
+    reconnect: function(){
+      this.$socket.emit('saveIdSocket', {id: this.$store.state.auth.user._id});
+    }
+  },
+  mounted() {
+    getSolicitacoes().then((value) => {
+      for(let i = 0; i < value.data.solicitacoes.length; i++){
+        this.solicitacoes.push(value.data.solicitacoes[i].de);
+      }
+      this.newSolicitacoes = this.solicitacoes.length;
+    });
   }
 }
 </script>

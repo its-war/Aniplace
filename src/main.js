@@ -5,6 +5,7 @@ import router from './router'
 import store from '@/store/vuex'
 import VuePlyr from 'vue-plyr'
 import 'vue-plyr/dist/vue-plyr.css'
+import VueSocketIO from 'vue-socket.io'
 
 Vue.config.productionTip = false
 
@@ -89,6 +90,16 @@ Vue.use(VuePlyr, {
     toggleInvert: false
   }
 })
+
+Vue.use(new VueSocketIO({
+  debug: true,
+  connection: 'http://localhost',
+  vuex: {
+    store,
+    actionPrefix: 'SOCKET_',
+    mutationPrefix: 'SOCKET_'
+  }
+}))
 
 window._Vue = new Vue({
   vuetify,

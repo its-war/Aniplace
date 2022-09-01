@@ -5,6 +5,7 @@
       <v-list>
         <v-list-item v-for="(user, i) in this.$store.state.main.topUsers" :key="i" :title="user.nome">
           <v-list-item-icon>{{i + 1}}º</v-list-item-icon>
+          <v-btn @click="addAmigo(user._id)" v-if="user._id !== getIdUser" dark icon :title="'Adicionar ' + user.nome + ' à sua lista de amigos'"><v-icon>mdi-account-plus</v-icon></v-btn>
           <v-list-item-title :style="tituloStyle">
             {{user.nome}}
           </v-list-item-title>
@@ -16,6 +17,7 @@
 
 <script>
 import {mapActions} from "vuex";
+import {solicitarAmizade} from "@/plugins/axios";
 
 export default {
   name: "TopUsuarios",
@@ -28,12 +30,20 @@ export default {
         case "xl": return '';
         default: return '';
       }
+    },
+    getIdUser(){
+      return this.$store.state.auth.user._id;
     }
   },
   methods: {
     ...mapActions('main', ['ActionListarTopUsers']),
     topUsers(){
       this.ActionListarTopUsers();
+    },
+    addAmigo(id){
+      solicitarAmizade(id).then((value) => {
+        console.log(value.data);
+      });
     }
   },
   mounted() {

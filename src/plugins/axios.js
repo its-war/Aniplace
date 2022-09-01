@@ -103,3 +103,15 @@ export function fastSearch(value){
 export function animesMaiorPontuacao(){
     return http.get('anime/getAnimesMaiorPontuacao', {headers: {'x-access-token': window.localStorage.getItem('token')}});
 }
+
+export function getSolicitacoes(){
+    return http.get('usuario/getSolicitacoes', {headers: {'x-access-token': window.localStorage.getItem('token')}});
+}
+
+export function getSolicitacao(id){
+    return http.get('usuario/getSolicitacao/' + id, {headers: {'x-access-token': window.localStorage.getItem('token')}});
+}
+
+export function solicitarAmizade(id){
+    return http.get('usuario/solicitarAmizade/' + id, {headers: {'x-access-token': window.localStorage.getItem('token')}});
+}
