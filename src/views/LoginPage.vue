@@ -17,6 +17,7 @@
                       label="Usuário"
                       type="text"
                       v-on:keyup.enter="login()"
+                      autofocus
                   ></v-text-field>
                   <v-text-field
                       dark

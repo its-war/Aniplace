@@ -115,3 +115,23 @@ export function getSolicitacao(id){
 export function solicitarAmizade(id){
     return http.get('usuario/solicitarAmizade/' + id, {headers: {'x-access-token': window.localStorage.getItem('token')}});
 }
+
+export function aceitarSolicitacao(de){
+    return http.get('usuario/aceitarSolicitacao/' + de, {headers: {'x-access-token': window.localStorage.getItem('token')}});
+}
+
+export function userGetInfoPublic(id){
+    return http.get('usuario/userGetInfoPublic/' + id, {headers: {'x-access-token': window.localStorage.getItem('token')}});
+}
+
+export function hasSolicitacao(id){
+    return http.get('usuario/hasSolicitacao/' + id, {headers: {'x-access-token': window.localStorage.getItem('token')}});
+}
+
+export function getNotifications(){
+    return http.get('usuario/getNotifications', {headers: {'x-access-token': window.localStorage.getItem('token')}});
+}
+
+export function setLidoTodos(){
+    return http.get('usuario/setLidoTodos', {headers: {'x-access-token': window.localStorage.getItem('token')}});
+}

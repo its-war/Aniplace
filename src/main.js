@@ -92,7 +92,7 @@ Vue.use(VuePlyr, {
 })
 
 Vue.use(new VueSocketIO({
-  debug: true,
+  debug: false,
   connection: 'http://localhost',
   vuex: {
     store,

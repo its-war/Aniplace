@@ -37,6 +37,9 @@
           </div>
         </div>
         <v-list class="appbar-dropdown" v-show="appbardropdown" :style="dropdownStyle">
+          <v-list-item @click="notification.enable = true">
+            <v-list-item-title :style="countNotifications > 0 ? 'color: #ff4a3b' : ''">Notificações</v-list-item-title>
+          </v-list-item>
           <v-list-item @click="solicitacao = true">
             <v-list-item-title :style="newSolicitacoes > 0 ? 'color: #ff4a3b' : ''">Solicitações</v-list-item-title>
           </v-list-item>
@@ -152,6 +155,18 @@
         </v-btn>
       </v-snackbar>
 
+      <v-snackbar bottom light timeout="10000" elevation="20" v-model="notification.preview">
+        <div style="text-align: center">
+          Você recebeu uma notificação.
+          <v-btn color="red" text @click="closeNotificationPreview()">
+            Ver <v-icon>mdi-redo</v-icon>
+          </v-btn>
+        </div>
+        <v-btn style="position: absolute; top: 0; right: 0" color="red" dark icon @click="notification.preview = false">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+      </v-snackbar>
+
       <v-dialog scrollable persistent :max-width="dialogWidth" dark v-model="this.$store.state.main.update.enabled">
         <v-card>
           <v-card-title class="text-h5 red">Atualização</v-card-title>
@@ -177,6 +192,24 @@
         </v-card>
       </v-dialog>
 
+      <v-dialog scrollable :max-width="dialogWidth" dark v-model="notification.enable">
+        <v-card>
+          <v-card-title style="margin-bottom: -50px" class="text-h5 red">Notificações</v-card-title>
+          <v-btn dark icon style="position: absolute; top: 0; right: 0" @click="notification.enable = false"><v-icon>mdi-close</v-icon></v-btn>
+          <div style="height: 300px">
+            <v-list style="text-align: left; position: relative; padding-top: 20px">
+              <v-btn small v-show="notification.list.length > 0" text dark color="primary" style="position: absolute; top: 0; right: 0" @click="marcarLidoTodos()">Marcar todos como lido</v-btn>
+              <v-list-item v-for="(n, i) in notification.list" :key="i" :style="n.status === 0 ? 'background-color: #8f5050' : ''">
+                <div v-if="notification.list.length > 0">
+                  <span>{{n.texto}}</span>
+                </div>
+              </v-list-item>
+              <div v-if="notification.list.length <= 0" style="padding: 20px">Ainda não há notificações.</div>
+            </v-list>
+          </div>
+        </v-card>
+      </v-dialog>
+
       <v-dialog scrollable :max-width="dialogWidth" dark v-model="solicitacao">
         <v-card>
           <v-card-title style="margin-bottom: -50px" class="text-h5 red">Solicitações de Amizade</v-card-title>
@@ -186,11 +219,12 @@
               <v-list-item v-for="(s, i) in solicitacoes" :key="i">
                 <div v-if="solicitacoes.length > 0">
                   <v-avatar style="margin-right: 3px">
-                    <img :src="getFotoSolicitacao()" :alt="s.nome"/>
+                    <img :src="getFotoSolicitacao(s.user.foto)" :alt="s.user.nome"/>
                   </v-avatar>
-                  <span>{{s.nome}}</span>
-                  <v-btn dark icon color="success"><v-icon>mdi-check</v-icon></v-btn>
-                  <v-btn dark icon color="red"><v-icon>mdi-close</v-icon></v-btn>
+                  <span>{{s.user.nome}}</span>
+                  <v-btn v-if="s.status === 0" @click="aceitarAmizade(s.user._id, i)" :loading="aceitarSolicitacaoLoading" dark icon color="success"><v-icon>mdi-check</v-icon></v-btn>
+                  <v-btn v-if="s.status === 0" :disabled="aceitarSolicitacaoLoading" dark icon color="red"><v-icon>mdi-close</v-icon></v-btn>
+                  <span v-if="s.status === 1"> — Vocês são amigos.</span>
                 </div>
               </v-list-item>
               <div v-if="solicitacoes.length <= 0" style="padding: 20px">Ainda não há solicitações de amizade.</div>
@@ -221,7 +255,7 @@
 
 <script>
 import {mapActions} from "vuex";
-import {fastSearch, getSolicitacoes, getSolicitacao} from "@/plugins/axios";
+import {aceitarSolicitacao, fastSearch, getSolicitacao, getSolicitacoes, getNotifications, setLidoTodos} from "@/plugins/axios";
 import ResultSearchBox from "@/components/inicio/ResultSearchBox";
 
 export default {
@@ -238,6 +272,14 @@ export default {
     solicitacoes: [],
     newSolicitacoes: 0,
     solicitacaoNotification: false,
+    solicitacaoAceita: false,
+    aceitarSolicitacaoLoading: false,
+    notification: {
+      enable: false,
+      list: [],
+      preview: false
+    },
+    newNotifications: 0,
     showFormReport: false,
     reportLoading: false,
     reportMsg: '',
@@ -281,7 +323,7 @@ export default {
       }
     },
     getFotoSolicitacao(foto){
-      return foto===null?'/img/users/perfil/'+foto:'/img/users/default.jpg';
+      return foto!==null?'/img/users/perfil/'+foto:'/img/users/default.jpg';
     },
     getFistName(){
       return this.$store.state.auth.user.fistname;
@@ -319,9 +361,47 @@ export default {
     onClickOutside(){
       this.appbardropdown = false;
     },
-    closeSolicitacaoNotification(){
+    async closeSolicitacaoNotification(){
+      await this.listarSolicitacoes();
       this.solicitacaoNotification = false;
       this.solicitacao = true;
+    },
+    closeNotificationPreview(){
+      this.notification.preview = false;
+      this.notification.enable = true;
+    },
+    aceitarAmizade(de, i){
+      this.aceitarSolicitacaoLoading = true;
+      aceitarSolicitacao(de).then((value) => {
+        if(value.data.amizade){
+          this.solicitacoes[i].status = 1;
+          this.aceitarSolicitacaoLoading = false;
+        }
+      });
+    },
+    listarSolicitacoes(){
+      this.solicitacoes = [];
+      getSolicitacoes().then((value) => {
+        for(let i = 0; i < value.data.solicitacoes.length; i++){
+          this.solicitacoes.push({user: value.data.solicitacoes[i].de, status: value.data.solicitacoes[i].status});
+        }
+        this.newSolicitacoes = this.solicitacoes.length;
+      });
+    },
+    listarNotifications(){
+      this.notification.list = [];
+      getNotifications().then((value) => {
+        this.notification.list = value.data.notifications;
+      });
+    },
+    marcarLidoTodos(){
+      setLidoTodos().then((value) => {
+        if(value.data.markLidos){
+          for(let i = 0; i < this.notification.list.length; i++){
+            this.notification.list[i].status = 1;
+          }
+        }
+      });
     }
   },
   watch: {
@@ -402,16 +482,24 @@ export default {
       }else{
         return 0;
       }
+    },
+    countNotifications(){
+      let count = 0;
+      for(let i = 0; i < this.notification.list.length; i++){
+        if(this.notification.list[i].status === 0){
+          count++;
+        }
+      }
+      return count > 0 ? 1 : count;
     }
   },
   sockets: {
     solicitacao: function(data){
       if(data.para === this.$store.state.auth.user._id){
         getSolicitacao(data.id).then((value) => {
-          this.solicitacoes.push(value.data.solicitacao.de);
+          this.solicitacoes.push({user: value.data.solicitacao.de, status: value.data.solicitacao.status});
           this.newSolicitacoes++;
           this.solicitacaoNotification = true;
-          console.log('solicitou');
         });
       }
     },
@@ -420,15 +508,15 @@ export default {
     },
     reconnect: function(){
       this.$socket.emit('saveIdSocket', {id: this.$store.state.auth.user._id});
+    },
+    newNotification: function(data){
+      this.notification.list.push(data.notification);
+      this.notification.preview = true;
     }
   },
   mounted() {
-    getSolicitacoes().then((value) => {
-      for(let i = 0; i < value.data.solicitacoes.length; i++){
-        this.solicitacoes.push(value.data.solicitacoes[i].de);
-      }
-      this.newSolicitacoes = this.solicitacoes.length;
-    });
+    this.listarNotifications();
+    this.listarSolicitacoes();
   }
 }
 </script>
