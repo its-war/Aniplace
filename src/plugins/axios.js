@@ -135,3 +135,36 @@ export function getNotifications(){
 export function setLidoTodos(){
     return http.get('usuario/setLidoTodos', {headers: {'x-access-token': window.localStorage.getItem('token')}});
 }
+
+export function newPost(texto, imagem){
+    return http.post('postagem/newPost', {
+        texto: texto,
+        imagem: imagem
+    }, {
+            headers: {
+                'x-access-token': window.localStorage.getItem('token'),
+                'Content-Type': 'multipart/form-data'
+            }
+        }
+    );
+}
+
+export function getFeed(pagina){
+    return http.get('postagem/getFeed/' + pagina, {headers: {'x-access-token': window.localStorage.getItem('token')}});
+}
+
+export function getPost(id){
+    return http.get('postagem/getPost/' + id, {headers: {'x-access-token': window.localStorage.getItem('token')}});
+}
+
+export function curtirPost(idPost){
+    return http.get('postagem/curtirPost/' + idPost, {headers: {'x-access-token': window.localStorage.getItem('token')}});
+}
+
+export function descurtirPost(idPost){
+    return http.get('postagem/descurtirPost/' + idPost, {headers: {'x-access-token': window.localStorage.getItem('token')}});
+}
+
+export function getCurtidas(idPost){
+    return http.get('postagem/getCurtidas/' + idPost, {headers: {'x-access-token': window.localStorage.getItem('token')}});
+}

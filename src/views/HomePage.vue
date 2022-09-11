@@ -376,6 +376,8 @@ export default {
         if(value.data.amizade){
           this.solicitacoes[i].status = 1;
           this.aceitarSolicitacaoLoading = false;
+        }else{
+          this.aceitarSolicitacaoLoading = false;
         }
       });
     },

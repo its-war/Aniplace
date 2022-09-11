@@ -23,17 +23,19 @@
       <v-main class="timeline" :style="esquerdaStyle">
         <div class="post">
           <div style="width: 60%; float: right">
-            <NewPostComponent/>
-            <PostUserComponent/>
-            <PostUserComponent/>
-            <PostUserComponent/>
-            <PostUserComponent/>
-            <PostUserComponent/>
-            <PostUserComponent/>
-            <PostUserComponent/>
-            <PostUserComponent/>
-            <PostUserComponent/>
-            <PostUserComponent/>
+            <NewPostComponent @newPost="newPost"/>
+            <PostUserComponent v-for="(post, i) in postagem.list" :key="i"
+                               :id="post._id"
+                               :texto="post.texto"
+                               :imagem="post.imagem"
+                               :registro="post.registro"
+                               :autor="post.autor"
+                               :curtidas="post.curtidas"
+                               :comentarios="post.comentarios"
+                               :compartilhamentos="post.compartilhamentos"
+                               :compartilhado="post.compartilhado"
+                               :origem="post.postOrigem"
+            />
           </div>
         </div>
       </v-main>
@@ -57,7 +59,7 @@ import DestaquesComponent from "@/components/inicio/DestaquesComponent";
 import LancamentoComponent from "@/components/inicio/LancamentoComponent";
 import MaisAcessadosComponent from "@/components/inicio/MaisAcessadosComponent";
 import TopUsuarios from "@/components/inicio/TopUsuarios";
-import {getLancamentos} from "@/plugins/axios";
+import {getLancamentos, getFeed} from "@/plugins/axios";
 import AnimesMaisVotados from "@/components/inicio/AnimesMaisVotados";
 import NewPostComponent from "@/components/postagem/NewPostComponent";
 import PostUserComponent from "@/components/postagem/PostUserComponent";
@@ -81,7 +83,23 @@ export default {
           nome: ''
         }
       }
-    ]
+    ],
+    postagem: {
+      list: [],
+      loading: false,
+      enableInfinity: false,
+      paginator: {
+        totalPosts: 0,
+        limit: 10,
+        totalPaginas: 0,
+        paginaAtual: 1,
+        slNo: 1,
+        temAnterior: false,
+        temProximo: false,
+        anterior: null,
+        proximo: null
+      }
+    }
   }),
   computed: {
     esquerdaStyle(){
@@ -133,9 +151,24 @@ export default {
       await getLancamentos().then((value) => {
         this.episodios = value.data.episodios;
       });
+    },
+    newPost(post){
+      this.postagem.list.unshift(post);
+    },
+    getPostagens(pagina){
+      this.postagem.loading = true;
+      getFeed(pagina).then((value) => {
+        console.log(value.data);
+        this.postagem.paginator = value.data.paginator;
+        for(let i = 0; i < value.data.posts.length; i++){
+          this.postagem.list.push(value.data.posts[i]);
+        }
+        this.postagem.loading = false;
+      });
     }
   },
   mounted() {
+    this.getPostagens(1);
     this.listLancamentos();
   }
 }

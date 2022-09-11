@@ -1,12 +1,13 @@
 <template>
   <v-card dark style="margin-bottom: 30px; margin-top: -7px" :style="'background-color: ' + this.$props.bgColor">
-    <v-form style="padding: 20px; margin-bottom: -40px">
-      <v-textarea label="Escreva uma nova postagem..." rows="2" v-model="texto"
+    <v-form ref="form" style="padding: 20px; margin-bottom: -40px">
+      <v-textarea :disabled="loading" label="Escreva uma nova postagem..." rows="2" v-model="texto"
                   dense outlined auto-grow counter="500"></v-textarea>
       <v-file-input style="cursor: pointer" :rules="rules"
                     hint="Formatos permitidos: JPEG, GIF e PNG" persistent-hint
                     prepend-icon="mdi-image"
                     v-model="img"
+                    :disabled="loading"
                     @change="imgPreview()"
                     dense outlined label="Anexe uma imagem..."
                     show-size truncate-length="18"
@@ -15,7 +16,7 @@
     </v-form>
     <v-card-actions>
       <v-spacer></v-spacer>
-      <v-btn :disabled="!img && texto.length === 0" dark @click="postar()">Postar</v-btn>
+      <v-btn :loading="loading" :disabled="!img && texto.length === 0" dark @click="postar()">Postar</v-btn>
     </v-card-actions>
     <div v-show="img" class="imgPreview">
       <img id="img" src="" alt=""/>
@@ -24,6 +25,8 @@
 </template>
 
 <script>
+import {newPost} from "@/plugins/axios";
+
 export default {
   name: "NewPostComponent",
   data: () => ({
@@ -31,7 +34,8 @@ export default {
       value => !value || value.size < 4000000 || 'O tamanho da imagem precisa ser menor que 4 MB!',
     ],
     img: null,
-    texto: ''
+    texto: '',
+    loading: false
   }),
   methods: {
     imgPreview(){
@@ -50,7 +54,18 @@ export default {
     },
     postar(){
       if(this.img || this.texto.length > 0){
-        console.log('post enviado.');
+        this.loading = true;
+        newPost(this.texto, this.img).then((value) => {
+          if(value.data.postagem){
+            this.texto = '';
+            this.img = null;
+            this.clearImg();
+            value.data.post.autor = this.$store.state.auth.user;
+            this.$emit('newPost', value.data.post);
+          }
+        }).finally(() => {
+          this.loading = false;
+        });
       }
     }
   },
