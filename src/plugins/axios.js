@@ -144,6 +144,9 @@ export function newPost(texto, imagem){
             headers: {
                 'x-access-token': window.localStorage.getItem('token'),
                 'Content-Type': 'multipart/form-data'
+            },
+            onUploadProgress: (progressEvent) => {
+                window._Vue.$store.dispatch('main/ActionSetUploadProgress', parseInt(Math.round((progressEvent.loaded / progressEvent.total) * 100)));
             }
         }
     );
@@ -161,10 +164,22 @@ export function curtirPost(idPost){
     return http.get('postagem/curtirPost/' + idPost, {headers: {'x-access-token': window.localStorage.getItem('token')}});
 }
 
+export function curtirComentario(idComentario){
+    return http.get('comentario/curtirComentario/' + idComentario, {headers: {'x-access-token': window.localStorage.getItem('token')}});
+}
+
 export function descurtirPost(idPost){
     return http.get('postagem/descurtirPost/' + idPost, {headers: {'x-access-token': window.localStorage.getItem('token')}});
 }
 
 export function getCurtidas(idPost){
     return http.get('postagem/getCurtidas/' + idPost, {headers: {'x-access-token': window.localStorage.getItem('token')}});
+}
+
+export function newComentario(id, texto, tipo){
+    return http.post('comentario/newComentario', {
+        id: id,
+        texto: texto,
+        tipo: tipo
+    }, {headers: {'x-access-token': window.localStorage.getItem('token')}});
 }

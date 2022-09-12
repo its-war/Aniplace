@@ -11,5 +11,6 @@ export default {
         message: ""
     },
     closeNotFoundLoading: false,
-    animes: []
+    animes: [],
+    uploadProgress: 0
 }

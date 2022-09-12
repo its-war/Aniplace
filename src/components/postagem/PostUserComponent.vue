@@ -33,20 +33,47 @@
     </v-card-text>
     <v-card-actions>
 
-      <v-btn @click="descurtir()" dark v-if="getCurtida"><v-icon color="red">mdi-heart</v-icon></v-btn>
-      <v-btn @click="curtir()" dark v-else><v-icon>mdi-heart-outline</v-icon></v-btn>
+      <v-btn :loading="curtirLoading" @click="descurtir()" dark v-if="getCurtida"><span v-if="$props.curtidas.length > 0">{{$props.curtidas.length}}</span> <v-icon color="red">mdi-heart</v-icon></v-btn>
+      <v-btn :loading="curtirLoading" @click="curtir()" dark v-else><span v-if="$props.curtidas.length > 0">{{$props.curtidas.length}}</span> <v-icon>mdi-heart-outline</v-icon></v-btn>
 
-      <v-btn dark><v-icon>mdi-comment-text-outline</v-icon></v-btn>
+      <v-tooltip top>
+        <template v-slot:activator="{on, attrs}">
+          <v-btn @click="comentario.enabled = !comentario.enabled" dark v-on="on" v-bind="attrs" style="margin-left: 8px"><v-icon>mdi-comment-text-outline</v-icon></v-btn>
+        </template>
+        <span>Exibir/Ocultar comentários</span>
+      </v-tooltip>
+
       <v-btn dark><v-icon>mdi-share-variant-outline</v-icon></v-btn>
     </v-card-actions>
+    <v-divider/>
+    <v-card-text>
+      <NewComentario @newComentario="newComentario" :id="$props.id" :tipo="1"/>
+      <ComentarioComponent v-for="(comentario, i) in $props.comentarios" :key="i"
+        :id="comentario._id"
+        :autor="comentario.autor"
+        :texto="comentario.texto"
+        :curtidas="comentario.curtidas"
+        :respostas="comentario.respostas"
+      />
+    </v-card-text>
   </v-card>
 </template>
 
 <script>
 import {curtirPost, descurtirPost} from "@/plugins/axios";
+import NewComentario from "@/components/comentario/NewComentario";
+import ComentarioComponent from "@/components/comentario/ComentarioComponent";
 
 export default {
   name: "PostUserComponent",
+  components: {ComentarioComponent, NewComentario},
+  data: () => ({
+    curtirLoading: false,
+    comentario: {
+      enabled: false,
+      loading: false
+    }
+  }),
   props: {
     id: {
       type: String,
@@ -103,15 +130,19 @@ export default {
       }
     },
     curtir(){
+      this.curtirLoading = true;
       curtirPost(this.$props.id).then((value) => {
         if(!value.data.erro){
           if(value.data.curtida){
             this.$props.curtidas.unshift(this.$store.state.auth.user._id);
           }
         }
+      }).finally(() => {
+        this.curtirLoading = false;
       });
     },
     descurtir(){
+      this.curtirLoading = true;
       descurtirPost(this.$props.id).then((value) => {
         if(value.data.descurtir){
           for(let i = 0; i < this.$props.curtidas.length; i++){
@@ -120,7 +151,12 @@ export default {
             }
           }
         }
+      }).finally(() => {
+        this.curtirLoading = false;
       });
+    },
+    newComentario(comentario){
+      this.$props.comentarios.unshift(comentario);
     }
   },
   computed: {

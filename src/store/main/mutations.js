@@ -27,5 +27,9 @@ export default {
 
     [types.SET_ANIME] (state, payload){
         state.animes = payload;
+    },
+
+    [types.SET_UPLOAD_PROGRESS] (state, payload) {
+        state.uploadProgress = payload;
     }
 }

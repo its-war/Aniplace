@@ -18,6 +18,7 @@
       <v-spacer></v-spacer>
       <v-btn :loading="loading" :disabled="!img && texto.length === 0" dark @click="postar()">Postar</v-btn>
     </v-card-actions>
+    <v-progress-linear :active="loading" :value="$store.state.main.uploadProgress" background-color="#dddddd" color="#ff4a3b"></v-progress-linear>
     <div v-show="img" class="imgPreview">
       <img id="img" src="" alt=""/>
     </div>

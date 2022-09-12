@@ -63,3 +63,7 @@ export const ActionCloseDialogUpdate = ({dispatch}) => {
         dispatch('ActionSetCloseDialogLoading', false);
     });
 }
+
+export const ActionSetUploadProgress = ({commit}, payload) => {
+    commit(types.SET_UPLOAD_PROGRESS, payload);
+}
