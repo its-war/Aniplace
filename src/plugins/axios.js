@@ -168,6 +168,10 @@ export function curtirComentario(idComentario){
     return http.get('comentario/curtirComentario/' + idComentario, {headers: {'x-access-token': window.localStorage.getItem('token')}});
 }
 
+export function descurtirComentario(idComentario){
+    return http.get('comentario/descurtirComentario/' + idComentario, {headers: {'x-access-token': window.localStorage.getItem('token')}});
+}
+
 export function descurtirPost(idPost){
     return http.get('postagem/descurtirPost/' + idPost, {headers: {'x-access-token': window.localStorage.getItem('token')}});
 }

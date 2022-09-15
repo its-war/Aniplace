@@ -31,6 +31,11 @@ export default {
         this.loading = true;
         newComentario(this.$props.id, this.comentario, this.$props.tipo).then((value) => {
           if(value.data.comentario){
+            value.data.comentario.autor = {
+              _id: this.$store.state.auth.user._id,
+              nome: this.$store.state.auth.user.nome,
+              foto: this.$store.state.auth.user.foto
+            }
             this.$emit('newComentario', value.data.comentario);
             this.comentario = '';
             this.$refs.textarea.blur();

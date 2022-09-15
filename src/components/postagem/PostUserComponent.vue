@@ -6,7 +6,7 @@
       </v-avatar>
       <h3 style="font-size: 16px">{{$props.autor.nome}}</h3>
     </v-card-title>
-    <v-card-subtitle style="text-align: left; margin-left: 53px; margin-top: -30px">há 10 min</v-card-subtitle>
+    <v-card-subtitle style="text-align: left; margin-left: 53px; margin-top: -30px">{{getData}}</v-card-subtitle>
     <v-menu offset-y v-if="$store.state.auth.user._id === $props.autor._id">
       <template v-slot:activator="{on, attrs}">
         <v-btn dark icon style="position: absolute; top: 0; right: 0" v-on="on" v-bind="attrs"><v-icon>mdi-dots-vertical</v-icon></v-btn>
@@ -54,6 +54,7 @@
         :texto="comentario.texto"
         :curtidas="comentario.curtidas"
         :respostas="comentario.respostas"
+        :registro="comentario.registro"
       />
     </v-card-text>
   </v-card>
@@ -63,6 +64,7 @@
 import {curtirPost, descurtirPost} from "@/plugins/axios";
 import NewComentario from "@/components/comentario/NewComentario";
 import ComentarioComponent from "@/components/comentario/ComentarioComponent";
+import DateControl from "@/plugins/DateControl";
 
 export default {
   name: "PostUserComponent",
@@ -134,7 +136,11 @@ export default {
       curtirPost(this.$props.id).then((value) => {
         if(!value.data.erro){
           if(value.data.curtida){
-            this.$props.curtidas.unshift(this.$store.state.auth.user._id);
+            this.$props.curtidas.unshift({
+              _id: this.$store.state.auth.user._id,
+              nome: this.$store.state.auth.user.nome,
+              foto: this.$store.state.auth.user.foto
+            });
           }
         }
       }).finally(() => {
@@ -146,7 +152,7 @@ export default {
       descurtirPost(this.$props.id).then((value) => {
         if(value.data.descurtir){
           for(let i = 0; i < this.$props.curtidas.length; i++){
-            if(this.$props.curtidas[i] === this.$store.state.auth.user._id){
+            if(this.$props.curtidas[i]._id === this.$store.state.auth.user._id){
               this.$props.curtidas.splice(i, 1);
             }
           }
@@ -162,11 +168,14 @@ export default {
   computed: {
     getCurtida(){
       for(let i = 0; i < this.$props.curtidas.length; i++){
-        if(this.$props.curtidas[i] === this.$store.state.auth.user._id){
+        if(this.$props.curtidas[i]._id === this.$store.state.auth.user._id){
           return true;
         }
       }
       return false;
+    },
+    getData(){
+      return new DateControl(this.$props.registro).getStatus();
     }
   }
 }
