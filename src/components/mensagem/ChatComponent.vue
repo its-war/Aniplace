@@ -5,15 +5,27 @@
     </v-toolbar>
     <v-btn @click="closeChat()" style="position: absolute; right: 0; top: 0" icon dark><v-icon>mdi-close</v-icon></v-btn>
 
-    <div style="width: 100%; height: 280px; overflow-y: auto" ref="chat">
-      <MensagemComponent
-          v-for="(msg, i) in $props.mensagens" :key="i"
-          :propria="msg.autor._id === $store.state.auth.user._id"
-          :autor="msg.autor.foto ? msg.autor.foto : ''"
-          :texto="msg.texto"
-          :id="msg._id"
-          ref="mensagem"
-      />
+    <div class="messages" ref="chat">
+
+      <div v-for="(mensagem, i) in $props.mensagens" :key="i" v-once>
+        <div class="msg my" v-if="$store.state.auth.user._id === mensagem.autor._id">
+          <div>
+            <div class="text my-message">
+              {{mensagem.texto}}
+            </div>
+          </div>
+        </div>
+
+        <div class="msg outher" v-else>
+          <div>
+            <div class="text other-message">
+              {{mensagem.texto}}
+            </div>
+          </div>
+        </div>
+
+      </div>
+
       <!-- TODO criar rota para solicitar informações da conversa (se já existir) e abrir o card -->
     </div>
 
@@ -37,13 +49,8 @@
 </template>
 
 <script>
-import MensagemComponent from "@/components/mensagem/MensagemComponent";
-
 export default {
   name: "ChatComponent",
-  components: {
-    MensagemComponent,
-  },
   data: () => ({
     mensagem: '',
     loading: false,
@@ -91,21 +98,71 @@ export default {
     this.$refs.chat.scrollTo(0, this.$refs.chat.scrollHeight);
     this.chatHeight = this.$refs.chat.scrollHeight;
   },
-  watch: {
-    mensagens: { //TODO fazer com que o chat role para baixo ao chegar novas mensagens
-      handler: function(){
-        this.$refs.chat.scrollTo(0, this.$refs.chat.scrollHeight);
+  sockets: {
+    frontNewMensagem: function(data){
+      let el = document.createElement('div');
+      if(data.mensagem.autor._id === this.$store.state.auth.user._id){
+        el.setAttribute("style", "display: flex;padding: 10px;justify-content: flex-end;");
+        el.innerHTML = `
+          <div style="max-width: 80%; box-shadow: 0 0 20px 5px rgba(0,0,0,.05);">
+            <div style="word-wrap: break-word;padding: 7px;border-radius: 15px;background-color: #ff4a3b;">
+              ${data.mensagem.texto}
+            </div>
+          </div>
+        `;
+      }else {
+        el.setAttribute('style', 'display: flex;padding: 10px;justify-content: flex-start;');
+        el.innerHTML = `
+          <div style="max-width: 80%; box-shadow: 0 0 20px 5px rgba(0,0,0,.05);">
+            <div style="word-wrap: break-word;padding: 7px;border-radius: 15px;background-color: #7c7c7c;">
+              ${data.mensagem.texto}
+            </div>
+          </div>
+        `;
       }
-    } //transition: max-height 200ms ease-out; scroll-behavior: smooth; hyphens: auto
-  },
-  updated() {
-    if(this.$refs.chat.scrollTop + this.$refs.chat.clientHeight === this.$refs.chat.scrollHeight){
-      this.$refs.chat.scrollTop = this.$refs.chat.scrollHeight;
+      this.$refs.chat.appendChild(el);
+      this.$refs.chat.scrollTop = this.$refs.chat.scrollHeight - this.$refs.chat.clientHeight;
     }
   }
 }
 </script>
 
 <style scoped>
+.messages {
+  width: 100%;
+  height: 280px;
+  overflow: auto;
+}
 
+.msg {
+  display: flex;
+  padding: 10px;
+}
+
+.msg > div {
+  max-width: 80%;
+  box-shadow: 0 0 20px 5px rgba(0,0,0,.05);
+}
+
+.msg.my {
+  justify-content: flex-end;
+}
+
+.msg.outher {
+  justify-content: flex-start;
+}
+
+.msg .text {
+  word-wrap: break-word;
+  padding: 7px;
+  border-radius: 15px;
+}
+
+.text.my-message {
+  background-color: #ff4a3b;
+}
+
+.text.other-message {
+  background-color: #7c7c7c;
+}
 </style>

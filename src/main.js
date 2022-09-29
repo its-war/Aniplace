@@ -93,7 +93,7 @@ Vue.use(VuePlyr, {
 
 Vue.use(new VueSocketIO({
   debug: false,
-  connection: 'http://localhost',
+  connection: 'http://192.168.0.15',
   vuex: {
     store,
     actionPrefix: 'SOCKET_',

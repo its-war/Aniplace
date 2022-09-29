@@ -26,7 +26,7 @@
         <div class="appbar-dropdown-activator">
           <div class="left">
             <v-btn dark icon><v-icon>mdi-account-multiple</v-icon></v-btn>
-            <v-btn dark icon @click="conversasMenuEnabled = !conversasMenuEnabled" v-click-outside="onClickOutsideConversasMenu"><v-icon>mdi-forum</v-icon></v-btn>
+            <v-btn dark icon @click="conversasMenuEnabled = !conversasMenuEnabled" v-click-outside="onClickOutsideConversasMenu"><v-icon :color="conversasMenuEnabled ? 'red' : ''">mdi-forum</v-icon></v-btn>
             <v-btn dark icon><v-icon>mdi-bell</v-icon></v-btn>
             <v-badge style="float: left" dot overlap offset-y="20" offset-x="0" color="red" avatar :value="countSolicitacoes">
               <v-avatar size="50px">
@@ -326,7 +326,7 @@ export default {
     conversas: [],
     mensagens: [],
     conversasAbertas: [],
-    conversasMenuEnabled: true
+    conversasMenuEnabled: false
   }),
   methods: {
     ...mapActions('auth', ['ActionKillSession']),
@@ -605,7 +605,6 @@ export default {
       this.notification.preview = true;
     },
     frontNewMensagem: function(data){
-      console.log('recebeu');
       let achou = false;
       for(let i = 0; i < this.conversas.length; i++){
         if(this.conversas[i]._id === data.idConversa){
