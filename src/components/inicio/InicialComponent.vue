@@ -35,6 +35,7 @@
                                :compartilhamentos="post.compartilhamentos"
                                :compartilhado="post.compartilhado"
                                :origem="post.postOrigem"
+                               @deletePost="deletePost(i)"
             />
             <h3 v-if="postagem.list.length  < 1" style="color: #ffffff">Ainda não há postagens.</h3>
           </div>
@@ -168,6 +169,9 @@ export default {
         }
         this.postagem.loading = false;
       });
+    },
+    deletePost(i){
+      this.postagem.list.splice(i, 1);
     }
   },
   mounted() {
@@ -200,6 +204,7 @@ export default {
 .temporada-sizer {
   width: 100%;
   margin-bottom: -50px;
+  padding-right: 30px;
 }
 
 .temporada {

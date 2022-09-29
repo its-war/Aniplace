@@ -103,6 +103,28 @@
           </div>
         </div>
       </div>
+      <div style="width: 100%; float: left; padding-left: 50px">
+        <h3>Comentários</h3>
+        <div style="width: 50%; background-color: rgb(30,30,30); display: block">
+          <v-card dark style="position: relative; padding: 15px">
+            <NewComentario
+                @newComentario="newComentario"
+                :id="anime._id"
+                :tipo="2"
+            />
+            <ComentarioComponent v-for="(comentario, i) in anime.comentarios" :key="i"
+                                 :id="comentario._id"
+                                 :autor="comentario.autor"
+                                 :texto="comentario.texto"
+                                 :respostas="comentario.respostas"
+                                 :curtidas="comentario.curtidas"
+                                 :registro="comentario.registro"
+                                 @deleteComentario="deleteComentario"
+            />
+            <h3 v-if="anime.comentarios.length <= 0">Seja o primeiro a comentar</h3>
+          </v-card>
+        </div>
+      </div>
       <div class="semelhantes">
         <h3 :style="this.$vuetify.breakpoint.name === 'xs' ? 'font-size: 15px' : ''">Semelhantes a {{anime.nome}}</h3>
         <div class="semelhantes-content d-flex flex-row">
@@ -118,10 +140,12 @@ import EpisodioBox from "@/components/episodio/EpisodioBox";
 import SemelhanteBox from "@/components/episodio/SemelhanteBox";
 import {listarAnime, getRanking, votar} from "@/plugins/axios";
 import {mapActions} from "vuex";
+import NewComentario from "@/components/comentario/NewComentario";
+import ComentarioComponent from "@/components/comentario/ComentarioComponent";
 
 export default {
   name: "AnimePageViewComponent",
-  components: {SemelhanteBox, EpisodioBox},
+  components: {ComentarioComponent, NewComentario, SemelhanteBox, EpisodioBox},
   data: () => ({
     anime: {
       _id: '',
@@ -130,6 +154,7 @@ export default {
       sinopse: '',
       foto: '',
       cover: '',
+      comentarios: [],
       acessos: 0,
       generos: [
           {
@@ -289,6 +314,12 @@ export default {
         this.notaLoading = false;
         this.getNota();
       });
+    },
+    newComentario(comentario){
+      this.anime.comentarios.unshift(comentario);
+    },
+    deleteComentario(i){
+      this.anime.comentarios.splice(i, 1);
     }
   },
   mounted() {

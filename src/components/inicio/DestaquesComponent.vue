@@ -19,7 +19,8 @@
                   <span v-show="nota[i] === null">Sem Nota</span>
                 </div>
               </template>
-              <span>{{quantidade[i]}} pessoas votaram nesse Anime.</span>
+              <span v-if="nota[i] !== null">{{quantidade[i]}} pessoas votaram nesse Anime.</span>
+              <span v-else>Ainda não há votos.</span>
             </v-tooltip>
           <v-btn :x-small="btnStyle" icon dark><v-icon color="red">mdi-heart-outline</v-icon></v-btn>
           <v-btn @click="animePage(destaque.anime._id)" :x-small="btnStyle" icon dark><v-icon>mdi-redo</v-icon></v-btn>

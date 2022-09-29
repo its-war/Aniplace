@@ -187,3 +187,23 @@ export function newComentario(id, texto, tipo){
         tipo: tipo
     }, {headers: {'x-access-token': window.localStorage.getItem('token')}});
 }
+
+export function deletePost(idPost){
+    return http.put('postagem/deletePost', {id: idPost}, {headers: {'x-access-token': window.localStorage.getItem('token')}});
+}
+
+export function deleteComentario(idComentario){
+    return http.put('comentario/deleteComentario', {id: idComentario}, {headers: {'x-access-token': window.localStorage.getItem('token')}});
+}
+
+export function getConversas(){
+    return http.get('conversa/getConversas', {headers: {'x-access-token': window.localStorage.getItem('token')}});
+}
+
+export function getConversa(idConversa){
+    return http.get('conversa/getConversa/' + idConversa, {headers: {'x-access-token': window.localStorage.getItem('token')}});
+}
+
+export function newConversa(idAmigo){
+    return http.post('conversa/newConversa', {id: idAmigo}, {headers: {'x-access-token': window.localStorage.getItem('token')}});
+}

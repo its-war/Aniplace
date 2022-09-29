@@ -23,16 +23,19 @@
         </div>
       </v-form>
       <div class="appbar-perfil" v-click-outside="onClickOutside">
-        <div class="appbar-dropdown-activator" @click="appbardropdown = !appbardropdown">
+        <div class="appbar-dropdown-activator">
           <div class="left">
+            <v-btn dark icon><v-icon>mdi-account-multiple</v-icon></v-btn>
+            <v-btn dark icon @click="conversasMenuEnabled = !conversasMenuEnabled" v-click-outside="onClickOutsideConversasMenu"><v-icon>mdi-forum</v-icon></v-btn>
+            <v-btn dark icon><v-icon>mdi-bell</v-icon></v-btn>
             <v-badge style="float: left" dot overlap offset-y="20" offset-x="0" color="red" avatar :value="countSolicitacoes">
               <v-avatar size="50px">
-                <img :src="getFoto()" alt="Imagem de usuário padrã." :style="fotoStyle"/>
+                <img :src="getFoto()" alt="Imagem de usuário padrã." :style="fotoStyle" @click="appbardropdown = !appbardropdown"/>
               </v-avatar>
-              <span :style="nomeDisplay">{{getFistName()}}</span>
+              <span @click="appbardropdown = !appbardropdown" :style="nomeDisplay">{{getFistName()}}</span>
             </v-badge>
           </div>
-          <div class="right" :style="nomeDisplay">
+          <div @click="appbardropdown = !appbardropdown" class="right" :style="nomeDisplay">
             <v-icon>mdi-chevron-down</v-icon>
           </div>
         </div>
@@ -54,6 +57,11 @@
           </v-list-item>
         </v-list>
       </div>
+      <ConversasMenuComponent
+          :conversas="conversas"
+          v-show="conversasMenuEnabled"
+          @abrirConversa="abrirConversaPeloMenu"
+      />
     </v-app-bar>
     <v-navigation-drawer v-model="drawer" fixed temporary dark style="z-index: 1000 !important;">
       <v-btn icon class="left btn-close" @click="drawer = false">
@@ -87,6 +95,22 @@
         </v-list-item-group>
       </v-list>
     </v-navigation-drawer>
+
+    <v-navigation-drawer right permanent fixed expand-on-hover dark style="z-index: 999 !important;">
+      <v-list>
+        <v-list-item v-for="(amigo, i) in $store.state.auth.user.amigos" :key="i" @click="abrirConversa(amigo)">
+          <v-list-item-avatar>
+            <v-avatar size="30px">
+              <img :src="'/img/users/' + getAmigoFoto(amigo.foto)" alt="Foto de perfil"/>
+            </v-avatar>
+          </v-list-item-avatar>
+          <v-list-item-title>
+            {{amigo.nome}}
+          </v-list-item-title>
+        </v-list-item>
+      </v-list>
+    </v-navigation-drawer>
+
     <v-main style="margin-bottom: 50px">
 
       <v-dialog scrollable persistent :max-width="dialogWidth" dark v-model="this.$store.state.main.notFound.enabled">
@@ -235,6 +259,14 @@
 
       <router-view/>
 
+      <ChatComponent
+          v-for="(conversa, i) in conversasAbertas" :key="i"
+          :id="conversa._id"
+          :participantes="conversa.participantes"
+          :mensagens="conversa.mensagens"
+          @closeChat="closeChat(i)"
+      />
+
     </v-main>
     <v-footer padless>
       <v-card flat tile width="100%" class="red lighten-1 text-center">
@@ -255,12 +287,16 @@
 
 <script>
 import {mapActions} from "vuex";
-import {aceitarSolicitacao, fastSearch, getSolicitacao, getSolicitacoes, getNotifications, setLidoTodos} from "@/plugins/axios";
+import {aceitarSolicitacao, fastSearch, getSolicitacao,
+  getSolicitacoes, getNotifications, setLidoTodos, getConversas,
+  newConversa, getConversa} from "@/plugins/axios";
 import ResultSearchBox from "@/components/inicio/ResultSearchBox";
+import ConversasMenuComponent from "@/components/menuBar/ConversasMenuComponent";
+import ChatComponent from "@/components/mensagem/ChatComponent";
 
 export default {
   name: "HomePage",
-  components: {ResultSearchBox},
+  components: {ChatComponent, ConversasMenuComponent, ResultSearchBox},
   data: () => ({
     drawer: false,
     group: null,
@@ -286,7 +322,11 @@ export default {
     reportRules: [
       v => !!v || 'Mensagem vazia.',
       v => (v && v.length <= 500) || 'A mensagem deve ter no máximo 500 dígitos.'
-    ]
+    ],
+    conversas: [],
+    mensagens: [],
+    conversasAbertas: [],
+    conversasMenuEnabled: true
   }),
   methods: {
     ...mapActions('auth', ['ActionKillSession']),
@@ -361,6 +401,9 @@ export default {
     onClickOutside(){
       this.appbardropdown = false;
     },
+    onClickOutsideConversasMenu(){
+      this.conversasMenuEnabled = false;
+    },
     async closeSolicitacaoNotification(){
       await this.listarSolicitacoes();
       this.solicitacaoNotification = false;
@@ -404,6 +447,58 @@ export default {
           }
         }
       });
+    },
+    getAmigoFoto(foto){
+      if(foto){
+        return foto;
+      }else{
+        return 'default.jpg';
+      }
+    },
+    abrirConversa(amigo){
+      let newC = true;
+      for(let i = 0; i < this.conversas.length; i++){
+        this.conversas[i].participantes.forEach((user) => {
+          if(user._id === amigo._id){
+            this.conversasAbertas.push(this.conversas[i]);
+            newC = false;
+          }
+        });
+      }
+      if(newC){
+        newConversa(amigo._id).then((value) => {
+          if(value.data.conversa){
+            for(let i = 0; i < value.data.conversa.participantes.length; i++){
+              if(value.data.conversa.participantes[i] === amigo._id){
+                value.data.conversa.participantes[i] = amigo;
+              }
+            }
+            this.conversas.unshift(value.data.conversa);
+            this.conversasAbertas.push(this.conversas[0]);
+          }
+        });
+      }
+    },
+    listarConversas(){
+      getConversas().then((value) => {
+        if(value.data.conversas.length > 0){
+          this.conversas = value.data.conversas;
+        }
+      });
+    },
+    closeChat(i){
+      this.conversasAbertas.splice(i, 1);
+    },
+    abrirConversaPeloMenu(idConversa){
+      for(let i = 0; i < this.conversas.length; i++){
+        if(this.conversas[i]._id === idConversa){
+          this.conversas[i].participantes.forEach((user) => {
+            if(user._id !== this.$store.state.auth.user._id){
+              this.abrirConversa(user);
+            }
+          });
+        }
+      }
     }
   },
   watch: {
@@ -505,20 +600,37 @@ export default {
         });
       }
     },
-    connect: function(){
-      this.$socket.emit('saveIdSocket', {id: this.$store.state.auth.user._id});
-    },
-    reconnect: function(){
-      this.$socket.emit('saveIdSocket', {id: this.$store.state.auth.user._id});
-    },
     newNotification: function(data){
       this.notification.list.push(data.notification);
       this.notification.preview = true;
+    },
+    frontNewMensagem: function(data){
+      console.log('recebeu');
+      let achou = false;
+      for(let i = 0; i < this.conversas.length; i++){
+        if(this.conversas[i]._id === data.idConversa){
+          achou = true;
+          this.conversas[i].mensagens.push(data.mensagem);
+        }
+      }
+
+      if(!achou){
+        getConversa(data.idConversa).then((value) => {
+          if(value.data.conversa){
+            this.conversas.unshift(value.data.conversa);
+          }
+        });
+      }
+    },
+    reconnect: function(){
+      this.$socket.emit('saveIdSocket', {id: this.$store.state.auth.user._id, socket: this.$store.state.main.connection});
     }
   },
   mounted() {
+    this.$socket.emit('saveIdSocket', {id: this.$store.state.auth.user._id, socket: this.$store.state.main.connection});
     this.listarNotifications();
     this.listarSolicitacoes();
+    this.listarConversas();
   }
 }
 </script>

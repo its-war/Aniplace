@@ -12,6 +12,22 @@
   </div>
 </template>
 
+<script>
+import {mapActions} from "vuex";
+
+export default {
+  name: 'AppComponent',
+  methods: {
+    ...mapActions('main', ['ActionSetConnection'])
+  },
+  sockets: {
+    firstConnection: function(data){
+      this.ActionSetConnection(data.socket);
+    }
+  }
+}
+</script>
+
 <style lang="scss">
 html {
   scroll-behavior: smooth !important;

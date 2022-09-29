@@ -31,5 +31,9 @@ export default {
 
     [types.SET_UPLOAD_PROGRESS] (state, payload) {
         state.uploadProgress = payload;
+    },
+
+    [types.SET_CONNECTION] (state, payload) {
+        state.connection = payload;
     }
 }

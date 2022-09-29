@@ -1,5 +1,6 @@
 <template>
   <v-card dark rounded style="margin-bottom: 30px">
+    <v-progress-linear background-color="#dddddd" color="#ff4a3b" indeterminate :active="comentario.loading"></v-progress-linear>
     <v-card-title>
       <v-avatar size="50px" style="margin-right: 3px">
         <img :src="'/img/users/' + getFotoAutor()" :alt="'Foto de perfil de ' + $props.autor.nome"/>
@@ -12,10 +13,7 @@
         <v-btn dark icon style="position: absolute; top: 0; right: 0" v-on="on" v-bind="attrs"><v-icon>mdi-dots-vertical</v-icon></v-btn>
       </template>
       <v-list dark>
-        <v-list-item>
-          <v-list-item-title><v-icon>mdi-pencil</v-icon> Editar</v-list-item-title>
-        </v-list-item>
-        <v-list-item>
+        <v-list-item @click="deletar()">
           <v-list-item-title><v-icon>mdi-delete</v-icon> Excluir</v-list-item-title>
         </v-list-item>
       </v-list>
@@ -55,13 +53,14 @@
         :curtidas="comentario.curtidas"
         :respostas="comentario.respostas"
         :registro="comentario.registro"
+        @deleteComentario="deleteComentario(i)"
       />
     </v-card-text>
   </v-card>
 </template>
 
 <script>
-import {curtirPost, descurtirPost} from "@/plugins/axios";
+import {curtirPost, descurtirPost, deletePost} from "@/plugins/axios";
 import NewComentario from "@/components/comentario/NewComentario";
 import ComentarioComponent from "@/components/comentario/ComentarioComponent";
 import DateControl from "@/plugins/DateControl";
@@ -163,6 +162,19 @@ export default {
     },
     newComentario(comentario){
       this.$props.comentarios.unshift(comentario);
+    },
+    deletar(){
+      this.comentario.loading = true;
+      deletePost(this.$props.id).then((value) => {
+        if(value.data.delete){
+          this.$emit('deletePost');
+        }
+      }).finally(() => {
+        this.comentario.loading = false;
+      });
+    },
+    deleteComentario(i){
+      this.$props.comentarios.splice(i, 1);
     }
   },
   computed: {

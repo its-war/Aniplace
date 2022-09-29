@@ -67,3 +67,7 @@ export const ActionCloseDialogUpdate = ({dispatch}) => {
 export const ActionSetUploadProgress = ({commit}, payload) => {
     commit(types.SET_UPLOAD_PROGRESS, payload);
 }
+
+export const ActionSetConnection = ({commit}, payload) => {
+    commit(types.SET_CONNECTION, payload);
+}

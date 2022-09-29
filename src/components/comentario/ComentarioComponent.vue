@@ -11,13 +11,10 @@
 
     <v-menu offset-y v-if="$store.state.auth.user._id === $props.autor._id">
       <template v-slot:activator="{on, attrs}">
-        <v-btn dark icon style="position: absolute; top: 0; right: 0" v-on="on" v-bind="attrs"><v-icon>mdi-dots-vertical</v-icon></v-btn>
+        <v-btn :loading="deleteLoading" dark icon style="position: absolute; top: 0; right: 0" v-on="on" v-bind="attrs"><v-icon>mdi-dots-vertical</v-icon></v-btn>
       </template>
       <v-list dark>
-        <v-list-item>
-          <v-list-item-title><v-icon>mdi-pencil</v-icon> Editar</v-list-item-title>
-        </v-list-item>
-        <v-list-item>
+        <v-list-item @click="deletar()">
           <v-list-item-title><v-icon>mdi-delete</v-icon> Excluir</v-list-item-title>
         </v-list-item>
       </v-list>
@@ -50,18 +47,20 @@
     </div>
     <v-divider/>
     <NewResposta :id-origem="$props.id" @newResposta="newResposta"/>
+    <span v-if="$props.respostas.length > 0">Respostas</span>
     <RespostaComponent v-for="(resposta, i) in $props.respostas" :key="i"
         :id="resposta._id"
         :autor="resposta.autor"
         :texto="resposta.texto"
         :registro="resposta.registro"
         :curtidas="resposta.curtidas"
+        @deleteResposta="deleteResposta(i)"
     />
   </div>
 </template>
 
 <script>
-import {curtirComentario, descurtirComentario} from "@/plugins/axios";
+import {curtirComentario, descurtirComentario, deleteComentario} from "@/plugins/axios";
 import NewResposta from "@/components/comentario/NewResposta";
 import DateControl from "@/plugins/DateControl";
 import RespostaComponent from "@/components/comentario/RespostaComponent";
@@ -70,7 +69,8 @@ export default {
   name: "ComentarioComponent",
   components: {RespostaComponent, NewResposta},
   data: () => ({
-    curtirLoading: false
+    curtirLoading: false,
+    deleteLoading: false
   }),
   props: {
     id: {
@@ -136,6 +136,19 @@ export default {
     },
     newResposta(resposta){
       this.$props.respostas.push(resposta);
+    },
+    deletar(){
+      this.deleteLoading = true;
+      deleteComentario(this.$props.id).then((value) => {
+        if(value.data.delete){
+          this.$emit('deleteComentario');
+        }
+      }).finally(() => {
+        this.deleteLoading = false;
+      });
+    },
+    deleteResposta(i){
+      this.$props.respostas.splice(i, 1);
     }
   },
   computed: {
