@@ -96,7 +96,7 @@
       </v-list>
     </v-navigation-drawer>
 
-    <v-navigation-drawer right permanent fixed expand-on-hover dark style="z-index: 999 !important;">
+    <v-navigation-drawer right permanent fixed expand-on-hover dark style="z-index: 999 !important;" v-show="$store.state.auth.user.amigos.length > 0">
       <v-list>
         <v-list-item v-for="(amigo, i) in $store.state.auth.user.amigos" :key="i" @click="abrirConversa(amigo)">
           <v-list-item-avatar>

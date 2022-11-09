@@ -62,14 +62,23 @@
             <v-tabs-items v-model="tab" style="background-color: rgba(30,30,30,.05)">
               <v-tab-item value="tab1">
                 <div class="posts-user">
-                  <NewPostComponent bgColor="rgba(30,30,30,.85)"/>
-                  <PostUserComponent/>
-                  <PostUserComponent/>
-                  <PostUserComponent/>
-                  <PostUserComponent/>
+                  <NewPostComponent bgColor="rgba(30,30,30,.85)" @newPost="newPost"/>
+                  <PostUserComponent v-for="(post, i) in postagem.list" :key="i"
+                                     :id="post._id"
+                                     :texto="post.texto"
+                                     :imagem="post.imagem"
+                                     :registro="post.registro"
+                                     :autor="post.autor"
+                                     :curtidas="post.curtidas"
+                                     :comentarios="post.comentarios"
+                                     :compartilhamentos="post.compartilhamentos"
+                                     :compartilhado="post.compartilhado"
+                                     :origem="post.postOrigem"
+                                     @deletePost="deletePost(i)"
+                  />
                 </div>
                 <v-card dark style="margin-top: 20px; background-color: rgba(30,30,30,.05)">
-                  <v-pagination @input="paginationNavigation()" color="red" v-model="postPage" :length="postPaginator.totalPaginas" total-visible="7"></v-pagination>
+                  <v-pagination @input="paginationNavigation()" color="red" v-model="postagem.paginator.paginaAtual" :length="postagem.paginator.totalPaginas" total-visible="7"></v-pagination>
                 </v-card>
               </v-tab-item>
             </v-tabs-items>
@@ -84,26 +93,51 @@
 <script>
 import NewPostComponent from "@/components/postagem/NewPostComponent";
 import PostUserComponent from "@/components/postagem/PostUserComponent";
+import {getFeedUser} from "@/plugins/axios";
+
 export default {
   name: "PerfilPageComponent",
   components: {PostUserComponent, NewPostComponent},
   data: () => ({
     tab: null,
-    postPage: 1,
-    postPaginator: {
-      totalPosts: 0,
-      limit: 10,
-      totalPaginas: 0,
-      paginaAtual: 1,
-      slNo: 1,
-      temAnterior: false,
-      temProximo: false,
-      anterior: null,
-      proximo: null
+    postagem: {
+      list: [],
+      loading: false,
+      enableInfinity: false,
+      paginator: {
+        totalPosts: 0,
+        limit: 10,
+        totalPaginas: 0,
+        paginaAtual: 1,
+        slNo: 1,
+        temAnterior: false,
+        temProximo: false,
+        anterior: null,
+        proximo: null
+      }
     }
   }),
   methods: {
-    paginationNavigation(){}
+    paginationNavigation(){},
+    newPost(post){
+      this.postagem.list.unshift(post);
+    },
+    getPostagens(pagina){
+      this.postagem.loading = true;
+      getFeedUser(pagina).then((value) => {
+        this.postagem.paginator = value.data.paginator;
+        for(let i = 0; i < value.data.posts.length; i++){
+          this.postagem.list.push(value.data.posts[i]);
+        }
+        this.postagem.loading = false;
+      });
+    },
+    deletePost(i){
+      this.postagem.list.splice(i, 1);
+    }
+  },
+  mounted() {
+    this.getPostagens(1);
   }
 }
 </script>

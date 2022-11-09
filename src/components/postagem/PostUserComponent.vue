@@ -26,7 +26,7 @@
         {{$props.texto}}
       </p>
       <div v-if="$props.imagem.length > 0" class="img-post">
-        <img :src="'http://localhost/img/posts/' + $props.imagem" alt="Imagem do post"/>
+        <img :src="'http://192.168.0.16/img/posts/' + $props.imagem" alt="Imagem do post"/>
       </div>
     </v-card-text>
     <v-card-actions>

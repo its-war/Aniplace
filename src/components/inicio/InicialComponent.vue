@@ -160,12 +160,9 @@ export default {
     getPostagens(pagina){
       this.postagem.loading = true;
       getFeed(pagina).then((value) => {
-        console.log(value.data.posts);
-        console.log('----------------------------------------------');
         this.postagem.paginator = value.data.paginator;
         for(let i = 0; i < value.data.posts.length; i++){
           this.postagem.list.push(value.data.posts[i]);
-          console.log(value.data.posts[i].comentarios);
         }
         this.postagem.loading = false;
       });

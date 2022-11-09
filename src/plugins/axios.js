@@ -2,8 +2,8 @@ import axios from 'axios';
 import store from '@/store/vuex';
 
 const http = axios.create({
-    baseURL: "http://192.168.0.15"
-    //http://192.168.0.15
+    baseURL: "http://192.168.0.16"
+    //http://192.168.0.16
     //https://aniplace.herokuapp.com
 });
 
@@ -154,6 +154,10 @@ export function newPost(texto, imagem){
 
 export function getFeed(pagina){
     return http.get('postagem/getFeed/' + pagina, {headers: {'x-access-token': window.localStorage.getItem('token')}});
+}
+
+export function getFeedUser(pagina){
+    return http.get('postagem/getFeedUser/' + pagina, {headers: {'x-access-token': window.localStorage.getItem('token')}});
 }
 
 export function getPost(id){
