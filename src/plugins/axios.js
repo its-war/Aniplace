@@ -211,3 +211,11 @@ export function getConversa(idConversa){
 export function newConversa(idAmigo){
     return http.post('conversa/newConversa', {id: idAmigo}, {headers: {'x-access-token': window.localStorage.getItem('token')}});
 }
+
+export function desfazerAmizade(id){
+    return http.get('usuario/desfazerAmizade/' + id, {
+        headers: {
+            'x-access-token': window.localStorage.getItem('token')
+        }
+    });
+}

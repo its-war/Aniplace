@@ -58,7 +58,7 @@
         </v-list>
       </div>
       <ConversasMenuComponent
-          :conversas="conversas"
+          :conversas="conversasHistory"
           v-show="conversasMenuEnabled"
           @abrirConversa="abrirConversaPeloMenu"
       />
@@ -96,13 +96,15 @@
       </v-list>
     </v-navigation-drawer>
 
-    <v-navigation-drawer right permanent fixed expand-on-hover dark style="z-index: 999 !important;" v-show="$store.state.auth.user.amigos.length > 0">
+    <v-navigation-drawer right permanent fixed expand-on-hover dark style="z-index: 999 !important;" v-show="this.$store.state.auth.user.amigos.length > 0">
       <v-list>
         <v-list-item v-for="(amigo, i) in $store.state.auth.user.amigos" :key="i" @click="abrirConversa(amigo)">
           <v-list-item-avatar>
-            <v-avatar size="30px">
-              <img :src="'/img/users/' + getAmigoFoto(amigo.foto)" alt="Foto de perfil"/>
-            </v-avatar>
+            <v-badge :value="amigo.online" bordered bottom color="#5DFF09" dot offset-x="10" offset-y="10">
+              <v-avatar size="30px">
+                <img :src="'/img/users/' + getAmigoFoto(amigo.foto)" alt="Foto de perfil"/>
+              </v-avatar>
+            </v-badge>
           </v-list-item-avatar>
           <v-list-item-title>
             {{amigo.nome}}
@@ -259,13 +261,17 @@
 
       <router-view/>
 
-      <ChatComponent
-          v-for="(conversa, i) in conversasAbertas" :key="i"
-          :id="conversa._id"
-          :participantes="conversa.participantes"
-          :mensagens="conversa.mensagens"
-          @closeChat="closeChat(i)"
-      />
+      <div v-for="(conversa, i) in conversas" :key="i">
+        <ChatComponent
+            v-if="conversa.ativo"
+            :id="conversa._id"
+            :participantes="conversa.participantes"
+            :mensagens="conversa.mensagens"
+            @closeChat="closeChat(i)"
+            :width="conversa.position"
+            :indice="i"
+        />
+      </div>
 
     </v-main>
     <v-footer padless>
@@ -324,6 +330,7 @@ export default {
       v => (v && v.length <= 500) || 'A mensagem deve ter no máximo 500 dígitos.'
     ],
     conversas: [],
+    conversasHistory: [],
     mensagens: [],
     conversasAbertas: [],
     conversasMenuEnabled: false
@@ -460,7 +467,10 @@ export default {
       for(let i = 0; i < this.conversas.length; i++){
         this.conversas[i].participantes.forEach((user) => {
           if(user._id === amigo._id){
-            this.conversasAbertas.push(this.conversas[i]);
+            if(!this.conversas[i].ativo){
+              this.conversas[i].ativo = true;
+              this.conversas[i].position = this.getConversaWidth(this.conversas[i].position, i);
+            }
             newC = false;
           }
         });
@@ -473,8 +483,10 @@ export default {
                 value.data.conversa.participantes[i] = amigo;
               }
             }
+            value.data.conversa.ativo = true;
             this.conversas.unshift(value.data.conversa);
-            this.conversasAbertas.push(this.conversas[0]);
+            this.conversasHistory.unshift(value.data.conversa);
+            this.conversas[0].position = this.getConversaWidth(0, 0);
           }
         });
       }
@@ -483,11 +495,19 @@ export default {
       getConversas().then((value) => {
         if(value.data.conversas.length > 0){
           this.conversas = value.data.conversas;
+          this.conversasHistory = value.data.conversas;
         }
       });
     },
     closeChat(i){
-      this.conversasAbertas.splice(i, 1);
+      let positionAntiga = this.conversas[i].position;
+      this.conversas[i].ativo = false;
+      this.conversas[i].position = 0;
+      for(let indice = 0; indice < this.conversas.length; indice++){
+        if(this.conversas[indice].ativo && this.conversas[indice].position > positionAntiga){
+          this.conversas[indice].position = this.conversas[indice].position - 1;
+        }
+      }
     },
     abrirConversaPeloMenu(idConversa){
       for(let i = 0; i < this.conversas.length; i++){
@@ -499,6 +519,17 @@ export default {
           });
         }
       }
+    },
+    getConversaWidth(positionAtual, indice){
+      for(let i = 0; i < this.conversas.length; i++){
+        if(this.conversas[i].ativo){
+          if(this.conversas[i].position > positionAtual){
+            positionAtual = this.conversas[i].position;
+          }
+        }
+      }
+      this.conversas[indice].position = positionAtual + 1;
+      return this.conversas[indice].position;
     }
   },
   watch: {
@@ -588,6 +619,9 @@ export default {
         }
       }
       return count > 0 ? 1 : count;
+    },
+    getConversasAbertas(){
+      return this.conversasAbertas;
     }
   },
   sockets: {
@@ -610,6 +644,7 @@ export default {
         if(this.conversas[i]._id === data.idConversa){
           achou = true;
           this.conversas[i].mensagens.push(data.mensagem);
+          //this.conversasHistory.splice(0, 0, this.conversas.splice(i, 1)[0]);
         }
       }
 
@@ -617,12 +652,40 @@ export default {
         getConversa(data.idConversa).then((value) => {
           if(value.data.conversa){
             this.conversas.unshift(value.data.conversa);
+            this.conversasHistory.unshift(value.data.conversa);
           }
         });
       }
     },
     reconnect: function(){
       this.$socket.emit('saveIdSocket', {id: this.$store.state.auth.user._id, socket: this.$store.state.main.connection});
+    },
+    desfazerAmizade: function(data){
+      for(let i = 0; i < this.$store.state.auth.user.amigos.length; i++){
+        if(this.$store.state.auth.user.amigos[i]._id === data.id){
+          this.$store.state.auth.user.amigos.splice(i, 1);
+        }
+      }
+    },
+    vistoOnline: function(data){
+      for(let i = 0; i < this.$store.state.auth.user.amigos.length; i++){
+        if(this.$store.state.auth.user.amigos[i]._id === data.idAmigo){
+          this.$store.state.auth.user.amigos[i].online = true;
+          if(data.resend){
+            this.$socket.emit('amigoOnline', {
+              to: data.idAmigo,
+              from: this.$store.state.auth.user._id
+            });
+          }
+        }
+      }
+    },
+    offline: function(data){
+      for(let i = 0; i < this.$store.state.auth.user.amigos.length; i++){
+        if(this.$store.state.auth.user.amigos[i]._id === data.idAmigo){
+          this.$store.state.auth.user.amigos[i].online = false;
+        }
+      }
     }
   },
   mounted() {

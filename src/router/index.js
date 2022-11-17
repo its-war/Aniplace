@@ -143,6 +143,11 @@ router.beforeEach(async (to, from, next) => {
 router.afterEach(() => {
   window.scrollTo(0,0);
   store.dispatch('main/ActionSetOverlay', false);
+  if(store.state.auth.user._id !== ''){
+    window._Vue.$socket.emit('saveIdSocket', {
+      id: store.state.auth.user._id
+    });
+  }
 });
 
 export default router

@@ -81,6 +81,11 @@
                   <v-pagination @input="paginationNavigation()" color="red" v-model="postagem.paginator.paginaAtual" :length="postagem.paginator.totalPaginas" total-visible="7"></v-pagination>
                 </v-card>
               </v-tab-item>
+              <v-tab-item value="tab2">
+                <div class="user-amigos">
+                  <AmigosViewComponent/>
+                </div>
+              </v-tab-item>
             </v-tabs-items>
 
           </v-tabs>
@@ -94,10 +99,11 @@
 import NewPostComponent from "@/components/postagem/NewPostComponent";
 import PostUserComponent from "@/components/postagem/PostUserComponent";
 import {getFeedUser} from "@/plugins/axios";
+import AmigosViewComponent from "@/components/perfil/AmigosViewComponent";
 
 export default {
   name: "PerfilPageComponent",
-  components: {PostUserComponent, NewPostComponent},
+  components: {AmigosViewComponent, PostUserComponent, NewPostComponent},
   data: () => ({
     tab: null,
     postagem: {
@@ -214,5 +220,10 @@ export default {
   width: 50%;
   margin: auto;
   padding: 20px 0;
+}
+
+.user-amigos {
+  width: 100%;
+  padding: 15px 50px 15px 10px;
 }
 </style>

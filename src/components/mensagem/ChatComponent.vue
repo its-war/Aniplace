@@ -1,11 +1,11 @@
 <template>
-  <v-card elevation="16" dark style="position: fixed; bottom: 0; right: 10%; width: 300px; height: 400px; z-index: 500">
+  <v-card elevation="16" dark :style="cardWidth" style="position: fixed; bottom: 0; width: 300px; height: 400px; z-index: 500">
     <v-toolbar dark>
       {{conversaTitle($props.participantes)}}
     </v-toolbar>
     <v-btn @click="closeChat()" style="position: absolute; right: 0; top: 0" icon dark><v-icon>mdi-close</v-icon></v-btn>
 
-    <div class="messages" ref="chat">
+    <div class="messages" :id="'chat' + $props.indice">
 
       <div v-for="(mensagem, i) in $props.mensagens" :key="i" v-once>
         <div class="msg my" v-if="$store.state.auth.user._id === mensagem.autor._id">
@@ -78,6 +78,7 @@ export default {
     },
     closeChat(){
       this.$emit('closeChat');
+      this.$forceUpdate();
     }
   },
   props: {
@@ -92,36 +93,66 @@ export default {
     mensagens: {
       type: Array,
       required: true
+    },
+    width: {
+      type: Number,
+      required: true
+    },
+    indice: {
+      type: Number,
+      required: true
     }
   },
   mounted() {
-    this.$refs.chat.scrollTo(0, this.$refs.chat.scrollHeight);
-    this.chatHeight = this.$refs.chat.scrollHeight;
+    let chat = document.getElementById('chat' + this.$props.indice);
+    chat.scrollTo(0, chat.scrollHeight);
+    this.chatHeight = chat.scrollHeight;
   },
   sockets: {
     frontNewMensagem: function(data){
-      let el = document.createElement('div');
-      if(data.mensagem.autor._id === this.$store.state.auth.user._id){
-        el.setAttribute("style", "display: flex;padding: 10px;justify-content: flex-end;");
-        el.innerHTML = `
+      if(this.$props.id === data.idConversa){
+        let el = document.createElement('div');
+        if(data.mensagem.autor._id === this.$store.state.auth.user._id){
+          el.setAttribute("style", "display: flex;padding: 10px;justify-content: flex-end;");
+          el.innerHTML = `
           <div style="max-width: 80%; box-shadow: 0 0 20px 5px rgba(0,0,0,.05);">
             <div style="word-wrap: break-word;padding: 7px;border-radius: 15px;background-color: #ff4a3b;">
               ${data.mensagem.texto}
             </div>
           </div>
         `;
-      }else {
-        el.setAttribute('style', 'display: flex;padding: 10px;justify-content: flex-start;');
-        el.innerHTML = `
+        }else {
+          el.setAttribute('style', 'display: flex;padding: 10px;justify-content: flex-start;');
+          el.innerHTML = `
           <div style="max-width: 80%; box-shadow: 0 0 20px 5px rgba(0,0,0,.05);">
             <div style="word-wrap: break-word;padding: 7px;border-radius: 15px;background-color: #7c7c7c;">
               ${data.mensagem.texto}
             </div>
           </div>
         `;
+        }
+
+        let chat = document.getElementById('chat' + this.$props.indice);
+
+        chat.appendChild(el);
+        chat.scrollTop = chat.scrollHeight - chat.clientHeight;
       }
-      this.$refs.chat.appendChild(el);
-      this.$refs.chat.scrollTop = this.$refs.chat.scrollHeight - this.$refs.chat.clientHeight;
+    }
+  },
+  computed: {
+    cardWidth(){
+      switch (this.$props.width){
+        case 1:
+          return 'right: 100px';
+        case 2:
+          return 'right: 415px';
+        case 3:
+          return 'right: 730px';
+        case 4:
+          return 'right: 1045px';
+        default:
+          return 'display: none';
+      }
     }
   }
 }
