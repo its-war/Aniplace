@@ -268,9 +268,18 @@
             :participantes="conversa.participantes"
             :mensagens="conversa.mensagens"
             @closeChat="closeChat(i)"
+            @mensagemVista="mensagemVista(i)"
             :width="conversa.position"
             :indice="i"
+            @playMsg="playMsgAudio"
         />
+      </div>
+      <div class="audio-msg-player" ref="audio">
+        <vue-plyr>
+          <audio crossorigin>
+            <source src="../assets/msg-audio.mp3" type="audio/mp3"/>
+          </audio>
+        </vue-plyr>
       </div>
 
     </v-main>
@@ -333,7 +342,8 @@ export default {
     conversasHistory: [],
     mensagens: [],
     conversasAbertas: [],
-    conversasMenuEnabled: false
+    conversasMenuEnabled: false,
+    audioPlayer: null
   }),
   methods: {
     ...mapActions('auth', ['ActionKillSession']),
@@ -477,9 +487,9 @@ export default {
       }
       if(newC){
         newConversa(amigo._id).then((value) => {
-          if(value.data.conversa){
-            for(let i = 0; i < value.data.conversa.participantes.length; i++){
-              if(value.data.conversa.participantes[i] === amigo._id){
+          if(value.data.conversa) {
+            for (let i = 0; i < value.data.conversa.participantes.length; i++) {
+              if (value.data.conversa.participantes[i] === amigo._id) {
                 value.data.conversa.participantes[i] = amigo;
               }
             }
@@ -530,6 +540,13 @@ export default {
       }
       this.conversas[indice].position = positionAtual + 1;
       return this.conversas[indice].position;
+    },
+    playMsgAudio(){
+      this.audioPlayer.play();
+    },
+    mensagemVista(i){
+      this.conversas[i].mensagens[this.conversas[i].mensagens.length - 1].visto = true;
+      this.$forceUpdate();
     }
   },
   watch: {
@@ -644,6 +661,9 @@ export default {
         if(this.conversas[i]._id === data.idConversa){
           achou = true;
           this.conversas[i].mensagens.push(data.mensagem);
+          if(!this.conversas[i].ativo){
+            this.abrirConversaPeloMenu(this.conversas[i]._id);
+          }
           //this.conversasHistory.splice(0, 0, this.conversas.splice(i, 1)[0]);
         }
       }
@@ -651,8 +671,9 @@ export default {
       if(!achou){
         getConversa(data.idConversa).then((value) => {
           if(value.data.conversa){
-            this.conversas.unshift(value.data.conversa);
-            this.conversasHistory.unshift(value.data.conversa);
+            this.conversas.push(value.data.conversa);
+            this.conversasHistory.push(value.data.conversa);
+            this.abrirConversaPeloMenu(value.data.conversa._id);
           }
         });
       }
@@ -693,6 +714,10 @@ export default {
     this.listarNotifications();
     this.listarSolicitacoes();
     this.listarConversas();
+
+    document.addEventListener('ready', (e) => {
+      this.audioPlayer = e.detail.plyr;
+    });
   }
 }
 </script>
@@ -780,5 +805,9 @@ export default {
 .appbar-perfil span {
   line-height: 50px;
   float: right;
+}
+
+.audio-msg-player {
+  display: none;
 }
 </style>

@@ -2,7 +2,7 @@ import axios from 'axios';
 import store from '@/store/vuex';
 
 const http = axios.create({
-    baseURL: "http://192.168.0.16"
+    baseURL: "http://192.168.0.21"
     //http://192.168.0.16
     //https://aniplace.herokuapp.com
 });

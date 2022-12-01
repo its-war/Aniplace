@@ -140,13 +140,16 @@ router.beforeEach(async (to, from, next) => {
     });
 });
 
-router.afterEach(() => {
+router.afterEach((to) => {
   window.scrollTo(0,0);
   store.dispatch('main/ActionSetOverlay', false);
-  if(store.state.auth.user._id !== ''){
-    window._Vue.$socket.emit('saveIdSocket', {
-      id: store.state.auth.user._id
-    });
+  if(to.name !== 'Login' && to.name !== 'Cadastro' && to.name !== 'Ativado' && to.path !== '/esqueceuSenha'){
+    if(store.state.auth.user._id !== ''){
+      window._Vue.$socket.emit('saveIdSocket', {
+        id: store.state.auth.user._id,
+        socket: store.state.main.connection
+      });
+    }
   }
 });
 
