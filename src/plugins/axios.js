@@ -219,3 +219,11 @@ export function desfazerAmizade(id){
         }
     });
 }
+
+export function carregarMensagens(id, pagina, limite){
+    return http.get('conversa/carregarMensagens/' + id + '/' + pagina + '/' + limite, {
+        headers: {
+            'x-access-token': window.localStorage.getItem('token')
+        }
+    });
+}

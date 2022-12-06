@@ -8,6 +8,9 @@
     <v-btn @click="closeChat()" style="position: absolute; right: 0; top: 0" icon dark><v-icon>mdi-close</v-icon></v-btn>
 
     <div class="messages" :id="'chatMaster' + $props.indice" @click="visualizar">
+
+      <v-btn icon loading style="margin: auto" v-show="scroll.loading"></v-btn>
+
       <div :id="'chat' + $props.indice">
         <div v-for="(mensagem, i) in $props.mensagens" :key="i" v-once>
           <div class="msg my" v-if="$store.state.auth.user._id === mensagem.autor._id">
@@ -54,12 +57,20 @@
 </template>
 
 <script>
+import {carregarMensagens} from "@/plugins/axios";
+
 export default {
   name: "ChatComponent",
   data: () => ({
     mensagem: '',
     loading: false,
-    chatHeight: 0
+    chatHeight: 0,
+    scroll: {
+      loading: false,
+      pagina: 1,
+      limite: 10,
+      final: false
+    }
   }),
   methods: {
     sendMessage(){
@@ -148,6 +159,45 @@ export default {
     let chat = document.getElementById('chatMaster' + this.$props.indice);
     chat.scrollTo(0, chat.scrollHeight);
     this.chatHeight = chat.scrollHeight;
+
+    chat.addEventListener('scroll', () => {
+      if(chat.scrollTop === 0 && !this.scroll.loading && !this.scroll.final) {
+        this.scroll.loading = true;
+        this.scroll.pagina = this.scroll.pagina + 1;
+        carregarMensagens(this.$props.id, this.scroll.pagina, this.scroll.limite).then((value) => {
+          this.scroll.loading = false;
+          if(value.data.mensagens.length > 0){
+            for(let i = 0; i < value.data.mensagens.length; i++){
+              let el = document.createElement('div');
+              if(value.data.mensagens[i].autor._id === this.$store.state.auth.user._id){
+                el.setAttribute("style", "display: flex;padding: 10px;justify-content: flex-end;");
+                el.innerHTML = `
+                    <div style="max-width: 80%; box-shadow: 0 0 20px 5px rgba(0,0,0,.05);">
+                      <div style="word-wrap: break-word;padding: 7px;border-radius: 15px;background-color: #ff4a3b;text-align: left" title="Enviada em ${this.getMsgRegistro(value.data.mensagens[i].registro)}">
+                        ${value.data.mensagens[i].texto}
+                      </div>
+                    </div>
+                 `;
+              }else{
+                el.setAttribute('style', 'display: flex;padding: 10px;justify-content: flex-start;');
+                el.innerHTML = `
+                  <div style="max-width: 80%; box-shadow: 0 0 20px 5px rgba(0,0,0,.05);">
+                    <div style="word-wrap: break-word;padding: 7px;border-radius: 15px;background-color: #7c7c7c;text-align: left" title="Enviada em ${this.getMsgRegistro(value.data.mensagens[i].registro)}">
+                      ${value.data.mensagens[i].texto}
+                    </div>
+                  </div>
+                `;
+              }
+              let chat = document.getElementById('chat' + this.$props.indice);
+              chat.prepend(el);
+            }
+          }else{
+            this.scroll.pagina = this.scroll.pagina - 1;
+            this.scroll.final = true;
+          }
+        });
+      }
+    });
   },
   sockets: {
     frontNewMensagem: function(data){
