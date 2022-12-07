@@ -64,12 +64,12 @@ export default {
   data: () => ({
     mensagem: '',
     loading: false,
-    chatHeight: 0,
     scroll: {
       loading: false,
       pagina: 1,
       limite: 10,
-      final: false
+      final: false,
+      lastHeight: 0
     }
   }),
   methods: {
@@ -158,7 +158,7 @@ export default {
   mounted() {
     let chat = document.getElementById('chatMaster' + this.$props.indice);
     chat.scrollTo(0, chat.scrollHeight);
-    this.chatHeight = chat.scrollHeight;
+    this.scroll.lastHeight = chat.scrollHeight;
 
     chat.addEventListener('scroll', () => {
       if(chat.scrollTop === 0 && !this.scroll.loading && !this.scroll.final) {
@@ -167,6 +167,7 @@ export default {
         carregarMensagens(this.$props.id, this.scroll.pagina, this.scroll.limite).then((value) => {
           this.scroll.loading = false;
           if(value.data.mensagens.length > 0){
+            let chatScroll = document.getElementById('chat' + this.$props.indice);
             for(let i = 0; i < value.data.mensagens.length; i++){
               let el = document.createElement('div');
               if(value.data.mensagens[i].autor._id === this.$store.state.auth.user._id){
@@ -188,9 +189,10 @@ export default {
                   </div>
                 `;
               }
-              let chat = document.getElementById('chat' + this.$props.indice);
-              chat.prepend(el);
+              chatScroll.prepend(el);
             }
+            chat.scrollTo(0, chat.scrollHeight - this.scroll.lastHeight);
+            this.scroll.lastHeight = chat.scrollHeight;
           }else{
             this.scroll.pagina = this.scroll.pagina - 1;
             this.scroll.final = true;
