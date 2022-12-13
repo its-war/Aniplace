@@ -1,5 +1,5 @@
 <template>
-  <v-card dark class="conversas-menu">
+  <v-card dark class="menu-painel-navbar">
     <v-card-title>Conversas Recentes</v-card-title>
     <v-card-text>
       <v-list v-if="hasMensagens">
@@ -62,13 +62,13 @@ export default {
 }
 </script>
 
-<style scoped>
-.conversas-menu {
-  position: absolute;
+<style>
+.menu-painel-navbar {
+  position: absolute !important;
   right: 70px;
   top: 50px;
   z-index: 1000;
-  width: 400px;
+  width: 400px !important;
   height: 450px;
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <v-app id="inspire">
-    <v-app-bar app dense dark style="z-index: 1000 !important; width: 100% !important;">
+    <v-app-bar app fixed dense dark style="z-index: 1000 !important; width: 100% !important;">
       <v-app-bar-nav-icon @click="drawer = true"></v-app-bar-nav-icon>
       <v-toolbar-title @click="menuClick('Home')">AniPlace</v-toolbar-title>
       <v-form class="form-busca" :style="searchDisplay">
@@ -24,28 +24,43 @@
       </v-form>
       <div class="appbar-perfil" v-click-outside="onClickOutside">
         <div class="appbar-dropdown-activator">
-          <div class="left">
-            <v-btn dark icon><v-icon>mdi-account-multiple</v-icon></v-btn>
-            <v-btn dark icon @click="conversasMenuEnabled = !conversasMenuEnabled" v-click-outside="onClickOutsideConversasMenu"><v-icon :color="conversasMenuEnabled ? 'red' : ''">mdi-forum</v-icon></v-btn>
-            <v-btn dark icon><v-icon>mdi-bell</v-icon></v-btn>
-            <v-badge style="float: left" dot overlap offset-y="20" offset-x="0" color="red" avatar :value="countSolicitacoes">
-              <v-avatar size="50px">
-                <img :src="getFoto()" alt="Imagem de usuário padrã." :style="fotoStyle" @click="appbardropdown = !appbardropdown"/>
-              </v-avatar>
-              <span @click="appbardropdown = !appbardropdown" :style="nomeDisplay">{{getFistName()}}</span>
+          <div class="left" v-click-outside="closeAllMenu">
+            <v-badge style="float: left" dot overlap left offset-y="20" offset-x="15" color="red" avatar :value="countSolicitacoes">
+              <v-btn dark icon @click="openSolicitationsMenu"><v-icon :color="solicitacao ? 'red' : ''">mdi-account-multiple</v-icon></v-btn>
             </v-badge>
+            <v-badge style="float: left" dot overlap left offset-y="20" offset-x="15" color="red" avatar :value="countConversas">
+              <v-btn dark icon @click="openConversasMenu">
+                <v-icon :color="conversasMenuEnabled ? 'red' : ''">mdi-forum</v-icon>
+              </v-btn>
+            </v-badge>
+            <v-badge style="float: left" dot overlap left offset-y="20" offset-x="15" color="red" avatar :value="countNotifications">
+              <v-btn dark icon @click="openNotificationsMenu"><v-icon :color="notification.enable ? 'red' : ''">mdi-bell</v-icon></v-btn>
+            </v-badge>
+            <v-avatar size="50px">
+              <img :src="getFoto()" alt="Imagem de usuário padrã." :style="fotoStyle" @click="openDropdownMenu"/>
+            </v-avatar>
+            <span @click="openDropdownMenu" :style="nomeDisplay">{{getFistName()}}</span>
+            <ConversasMenuComponent
+                :conversas="conversasHistory"
+                v-show="conversasMenuEnabled"
+                @abrirConversa="abrirConversaPeloMenu"
+            />
+            <SolicitacoesMenuComponent
+                :solicitacoes="solicitacoes"
+                v-show="solicitacao"
+                @atualizarSolicitacao="atualizarSolicitacao"
+            />
+            <NotificacoesMenuComponent
+                :notifications="notification.list"
+                v-show="notification.enable"
+                @lerTudo="marcarLidoTodos"
+            />
           </div>
           <div @click="appbardropdown = !appbardropdown" class="right" :style="nomeDisplay">
             <v-icon>mdi-chevron-down</v-icon>
           </div>
         </div>
         <v-list class="appbar-dropdown" v-show="appbardropdown" :style="dropdownStyle">
-          <v-list-item @click="notification.enable = true">
-            <v-list-item-title :style="countNotifications > 0 ? 'color: #ff4a3b' : ''">Notificações</v-list-item-title>
-          </v-list-item>
-          <v-list-item @click="solicitacao = true">
-            <v-list-item-title :style="newSolicitacoes > 0 ? 'color: #ff4a3b' : ''">Solicitações</v-list-item-title>
-          </v-list-item>
           <v-list-item @click="menuClick('Perfil')">
             <v-list-item-title>Perfil</v-list-item-title>
           </v-list-item>
@@ -57,11 +72,7 @@
           </v-list-item>
         </v-list>
       </div>
-      <ConversasMenuComponent
-          :conversas="conversasHistory"
-          v-show="conversasMenuEnabled"
-          @abrirConversa="abrirConversaPeloMenu"
-      />
+       <!-- TODO colocar um badge no icone das notificações e colocar os Menus dentro de uma div com cada icone para melhorar o clickOut -->
     </v-app-bar>
     <v-navigation-drawer v-model="drawer" fixed temporary dark style="z-index: 1000 !important;">
       <v-btn icon class="left btn-close" @click="drawer = false">
@@ -113,7 +124,7 @@
       </v-list>
     </v-navigation-drawer>
 
-    <v-main style="margin-bottom: 50px">
+    <v-main style="margin-bottom: 50px;">
 
       <v-dialog scrollable persistent :max-width="dialogWidth" dark v-model="this.$store.state.main.notFound.enabled">
         <v-card>
@@ -218,47 +229,6 @@
         </v-card>
       </v-dialog>
 
-      <v-dialog scrollable :max-width="dialogWidth" dark v-model="notification.enable">
-        <v-card>
-          <v-card-title style="margin-bottom: -50px" class="text-h5 red">Notificações</v-card-title>
-          <v-btn dark icon style="position: absolute; top: 0; right: 0" @click="notification.enable = false"><v-icon>mdi-close</v-icon></v-btn>
-          <div style="height: 300px">
-            <v-list style="text-align: left; position: relative; padding-top: 20px">
-              <v-btn small v-show="notification.list.length > 0" text dark color="primary" style="position: absolute; top: 0; right: 0" @click="marcarLidoTodos()">Marcar todos como lido</v-btn>
-              <v-list-item v-for="(n, i) in notification.list" :key="i" :style="n.status === 0 ? 'background-color: #8f5050' : ''">
-                <div v-if="notification.list.length > 0">
-                  <span>{{n.texto}}</span>
-                </div>
-              </v-list-item>
-              <div v-if="notification.list.length <= 0" style="padding: 20px">Ainda não há notificações.</div>
-            </v-list>
-          </div>
-        </v-card>
-      </v-dialog>
-
-      <v-dialog scrollable :max-width="dialogWidth" dark v-model="solicitacao">
-        <v-card>
-          <v-card-title style="margin-bottom: -50px" class="text-h5 red">Solicitações de Amizade</v-card-title>
-          <v-btn dark icon style="position: absolute; top: 0; right: 0" @click="solicitacao = false"><v-icon>mdi-close</v-icon></v-btn>
-          <div style="height: 300px">
-            <v-list style="text-align: left">
-              <v-list-item v-for="(s, i) in solicitacoes" :key="i">
-                <div v-if="solicitacoes.length > 0">
-                  <v-avatar style="margin-right: 3px">
-                    <img :src="getFotoSolicitacao(s.user.foto)" :alt="s.user.nome"/>
-                  </v-avatar>
-                  <span>{{s.user.nome}}</span>
-                  <v-btn v-if="s.status === 0" @click="aceitarAmizade(s.user._id, i)" :loading="aceitarSolicitacaoLoading" dark icon color="success"><v-icon>mdi-check</v-icon></v-btn>
-                  <v-btn v-if="s.status === 0" :disabled="aceitarSolicitacaoLoading" dark icon color="red"><v-icon>mdi-close</v-icon></v-btn>
-                  <span v-if="s.status === 1"> — Vocês são amigos.</span>
-                </div>
-              </v-list-item>
-              <div v-if="solicitacoes.length <= 0" style="padding: 20px">Ainda não há solicitações de amizade.</div>
-            </v-list>
-          </div>
-        </v-card>
-      </v-dialog>
-
       <router-view/>
 
       <div v-for="(conversa, i) in conversas" :key="i">
@@ -302,16 +272,20 @@
 
 <script>
 import {mapActions} from "vuex";
-import {aceitarSolicitacao, fastSearch, getSolicitacao,
+import {fastSearch, getSolicitacao,
   getSolicitacoes, getNotifications, setLidoTodos, getConversas,
   newConversa, getConversa} from "@/plugins/axios";
 import ResultSearchBox from "@/components/inicio/ResultSearchBox";
 import ConversasMenuComponent from "@/components/menuBar/ConversasMenuComponent";
 import ChatComponent from "@/components/mensagem/ChatComponent";
+import SolicitacoesMenuComponent from "@/components/menuBar/SolicitacoesMenuComponent";
+import NotificacoesMenuComponent from "@/components/menuBar/NotificacoesMenuComponent";
 
 export default {
   name: "HomePage",
-  components: {ChatComponent, ConversasMenuComponent, ResultSearchBox},
+  components: {
+    NotificacoesMenuComponent,
+    SolicitacoesMenuComponent, ChatComponent, ConversasMenuComponent, ResultSearchBox},
   data: () => ({
     drawer: false,
     group: null,
@@ -379,9 +353,6 @@ export default {
         return '/img/users/default.jpg';
       }
     },
-    getFotoSolicitacao(foto){
-      return foto!==null?'/img/users/perfil/'+foto:'/img/users/default.jpg';
-    },
     getFistName(){
       return this.$store.state.auth.user.fistname;
     },
@@ -418,6 +389,42 @@ export default {
     onClickOutside(){
       this.appbardropdown = false;
     },
+    closeAllMenu(){
+      this.onClickOutsideConversasMenu();
+      this.solicitacao = false;
+      this.notification.enable = false;
+    },
+    openSolicitationsMenu(){
+      if(this.solicitacao){
+        this.solicitacao = !this.solicitacao;
+      }else{
+        this.closeAllMenu();
+        this.appbardropdown = false;
+        this.solicitacao = true;
+      }
+    },
+    openConversasMenu(){
+      if(this.conversasMenuEnabled){
+        this.conversasMenuEnabled = !this.conversasMenuEnabled;
+      }else{
+        this.closeAllMenu();
+        this.appbardropdown = false;
+        this.conversasMenuEnabled = true;
+      }
+    },
+    openNotificationsMenu(){
+      if(this.notification.enable){
+        this.notification.enable = !this.notification.enable;
+      }else{
+        this.closeAllMenu();
+        this.appbardropdown = false;
+        this.notification.enable = true;
+      }
+    },
+    openDropdownMenu(){
+      this.closeAllMenu();
+      this.appbardropdown = !this.appbardropdown;
+    },
     onClickOutsideConversasMenu(){
       this.conversasMenuEnabled = false;
     },
@@ -429,17 +436,6 @@ export default {
     closeNotificationPreview(){
       this.notification.preview = false;
       this.notification.enable = true;
-    },
-    aceitarAmizade(de, i){
-      this.aceitarSolicitacaoLoading = true;
-      aceitarSolicitacao(de).then((value) => {
-        if(value.data.amizade){
-          this.solicitacoes[i].status = 1;
-          this.aceitarSolicitacaoLoading = false;
-        }else{
-          this.aceitarSolicitacaoLoading = false;
-        }
-      });
     },
     listarSolicitacoes(){
       this.solicitacoes = [];
@@ -454,6 +450,10 @@ export default {
       this.notification.list = [];
       getNotifications().then((value) => {
         this.notification.list = value.data.notifications;
+        for(let i = 0; i < value.data.notifications; i++){
+          this.notification.list[i].dado = value.data.dados;
+        }
+        console.log(value.data.notifications);
       });
     },
     marcarLidoTodos(){
@@ -547,6 +547,13 @@ export default {
     mensagemVista(i){
       this.conversas[i].mensagens[this.conversas[i].mensagens.length - 1].visto = true;
       this.$forceUpdate();
+    },
+    atualizarSolicitacao(i){
+      console.log(this.solicitacoes);
+      this.solicitacoes[i].status = 1;
+    },
+    solicitacaoMenuClickOut(){
+      this.solicitacao = false;
     }
   },
   watch: {
@@ -637,6 +644,16 @@ export default {
       }
       return count > 0 ? 1 : count;
     },
+    countConversas(){
+      for(let i = 0; i < this.conversas.length; i++){
+        if(this.conversas[i].mensagens.length > 0){
+          if(!this.conversas[i].mensagens[this.conversas[i].mensagens.length - 1].visto && this.conversas[i].mensagens[this.conversas[i].mensagens.length - 1].autor._id !== this.$store.state.auth.user._id){
+            return 1;
+          }
+        }
+      }
+      return 0;
+    },
     getConversasAbertas(){
       return this.conversasAbertas;
     }
@@ -646,6 +663,7 @@ export default {
       if(data.para === this.$store.state.auth.user._id){
         getSolicitacao(data.id).then((value) => {
           this.solicitacoes.push({user: value.data.solicitacao.de, status: value.data.solicitacao.status});
+          console.log(this.solicitacoes[this.solicitacoes.length - 1]);
           this.newSolicitacoes++;
           this.solicitacaoNotification = true;
         });
