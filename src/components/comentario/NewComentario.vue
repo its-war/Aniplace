@@ -1,7 +1,7 @@
 <template>
   <v-form>
     <v-avatar size="50px" style="float: left; margin-right: 5px">
-      <img src="/img/users/default.jpg" alt="Foto de perfil">
+      <img :src="getFoto" alt="Foto de perfil">
     </v-avatar>
     <v-textarea
       label="Deixe seu comentário..."
@@ -54,6 +54,15 @@ export default {
     tipo: {
       type: Number,
       required: true
+    }
+  },
+  computed: {
+    getFoto(){
+      if(this.$store.state.auth.user){
+        return this.$store.state.auth.user.foto!==null?this.$imgServer+'/img/users/'+this.$store.state.auth.user.foto:this.$imgUserDefault;
+      }else{
+        return this.$imgUserDefault;
+      }
     }
   }
 }

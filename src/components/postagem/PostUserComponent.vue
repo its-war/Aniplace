@@ -3,7 +3,7 @@
     <v-progress-linear background-color="#dddddd" color="#ff4a3b" indeterminate :active="comentario.loading"></v-progress-linear>
     <v-card-title>
       <v-avatar size="50px" style="margin-right: 3px">
-        <img :src="'/img/users/' + getFotoAutor()" :alt="'Foto de perfil de ' + $props.autor.nome"/>
+        <img :src="getFotoAutor()" :alt="'Foto de perfil de ' + $props.autor.nome"/>
       </v-avatar>
       <h3 style="font-size: 16px">{{$props.autor.nome}}</h3>
     </v-card-title>
@@ -125,9 +125,9 @@ export default {
   methods: {
     getFotoAutor(){
       if(this.$props.autor.foto){
-        return this.$props.autor.foto;
+        return this.$imgServer + '/img/users/' + this.$props.autor.foto;
       }else{
-        return 'default.jpg';
+        return this.$imgUserDefault;
       }
     },
     curtir(){

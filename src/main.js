@@ -101,6 +101,10 @@ Vue.use(new VueSocketIO({
   }
 }))
 
+Vue.prototype.$imgServer = 'http://192.168.0.21:3000'
+Vue.prototype.$urlBase = 'http://192.168.0.21:8080'
+Vue.prototype.$imgUserDefault = 'http://192.168.0.21:8080/img/users/default.jpg'
+
 window._Vue = new Vue({
   vuetify,
   router,

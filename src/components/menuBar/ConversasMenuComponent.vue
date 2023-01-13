@@ -8,8 +8,8 @@
             style="overflow: auto" @click="abrirConversa(conversa._id)"
         >
           <v-list-item-avatar size="35px">
-            <img v-if="conversa.participantes[0]._id !== $store.state.auth.user._id" :src="'/img/users/' + getFoto(conversa.participantes[0].foto)" alt="Foto de perfil">
-            <img v-if="conversa.participantes[1]._id !== $store.state.auth.user._id" :src="'/img/users/' + getFoto(conversa.participantes[1].foto)" alt="Foto de perfil">
+            <img v-if="conversa.participantes[0]._id !== $store.state.auth.user._id" :src="getFoto(conversa.participantes[0].foto)" alt="Foto de perfil">
+            <img v-if="conversa.participantes[1]._id !== $store.state.auth.user._id" :src="getFoto(conversa.participantes[1].foto)" alt="Foto de perfil">
           </v-list-item-avatar>
           <v-list-item-title style="text-align: left">
             <span v-if="conversa.participantes[0]._id !== $store.state.auth.user._id">{{conversa.participantes[0].nome}}</span>
@@ -34,9 +34,9 @@ export default {
     },
     getFoto(foto){
       if(foto){
-        return foto;
+        return this.$imgServer + '/img/users/' + foto;
       }else{
-        return 'default.jpg';
+        return this.$imgUserDefault;
       }
     },
     abrirConversa(idConversa){

@@ -72,7 +72,6 @@
           </v-list-item>
         </v-list>
       </div>
-       <!-- TODO colocar um badge no icone das notificações e colocar os Menus dentro de uma div com cada icone para melhorar o clickOut -->
     </v-app-bar>
     <v-navigation-drawer v-model="drawer" fixed temporary dark style="z-index: 1000 !important;">
       <v-btn icon class="left btn-close" @click="drawer = false">
@@ -107,13 +106,13 @@
       </v-list>
     </v-navigation-drawer>
 
-    <v-navigation-drawer right permanent fixed expand-on-hover dark style="z-index: 999 !important;" v-show="this.$store.state.auth.user.amigos.length > 0">
+    <v-navigation-drawer right permanent fixed expand-on-hover dark style="z-index: 999 !important;" v-show="showListAmigos">
       <v-list>
         <v-list-item v-for="(amigo, i) in $store.state.auth.user.amigos" :key="i" @click="abrirConversa(amigo)">
           <v-list-item-avatar>
             <v-badge :value="amigo.online" bordered bottom color="#5DFF09" dot offset-x="10" offset-y="10">
               <v-avatar size="30px">
-                <img :src="'/img/users/' + getAmigoFoto(amigo.foto)" alt="Foto de perfil"/>
+                <img :src="getAmigoFoto(amigo.foto)" alt="Foto de perfil"/>
               </v-avatar>
             </v-badge>
           </v-list-item-avatar>
@@ -347,10 +346,10 @@ export default {
       this.$router.push({path: destino, params: {idusuario: idusuario}});
     },
     getFoto(){
-      if(this.$store.state.auth.user.length > 0){
-        return this.$store.state.auth.user.foto!==null?'/img/users/perfil/'+this.$store.state.auth.user.foto:'/img/users/default.jpg';
+      if(this.$store.state.auth.user){
+        return this.$store.state.auth.user.foto!==null?this.$imgServer+'/img/users/'+this.$store.state.auth.user.foto:this.$imgUserDefault;
       }else{
-        return '/img/users/default.jpg';
+        return this.$imgUserDefault;
       }
     },
     getFistName(){
@@ -375,7 +374,6 @@ export default {
     reportar(){
       this.reportLoading = true;
       setTimeout(() => {
-        console.log(this.reportMsg);
         this.reportLoading = false;
         this.showFormReport = false;
         this.reportMsg = '';
@@ -453,7 +451,6 @@ export default {
         for(let i = 0; i < value.data.notifications; i++){
           this.notification.list[i].dado = value.data.dados;
         }
-        console.log(value.data.notifications);
       });
     },
     marcarLidoTodos(){
@@ -467,9 +464,9 @@ export default {
     },
     getAmigoFoto(foto){
       if(foto){
-        return foto;
+        return this.$imgServer + '/img/users/' + foto;
       }else{
-        return 'default.jpg';
+        return this.$imgUserDefault;
       }
     },
     abrirConversa(amigo){
@@ -549,7 +546,6 @@ export default {
       this.$forceUpdate();
     },
     atualizarSolicitacao(i){
-      console.log(this.solicitacoes);
       this.solicitacoes[i].status = 1;
     },
     solicitacaoMenuClickOut(){
@@ -656,6 +652,14 @@ export default {
     },
     getConversasAbertas(){
       return this.conversasAbertas;
+    },
+    showListAmigos(){
+      if(this.$store.state.auth.user){
+        if(this.$store.state.auth.user.amigos.length > 0){
+          return true;
+        }
+      }
+      return false;
     }
   },
   sockets: {
@@ -663,7 +667,6 @@ export default {
       if(data.para === this.$store.state.auth.user._id){
         getSolicitacao(data.id).then((value) => {
           this.solicitacoes.push({user: value.data.solicitacao.de, status: value.data.solicitacao.status});
-          console.log(this.solicitacoes[this.solicitacoes.length - 1]);
           this.newSolicitacoes++;
           this.solicitacaoNotification = true;
         });

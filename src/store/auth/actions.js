@@ -56,7 +56,11 @@ export const ActionLogin = ({ dispatch }, payload) => {
                 dispatch('ActionSetLoginMsg', "");
                 dispatch('ActionSetLoginErr', false);
                 dispatch('ActionSetLoading', false);
-                window._Vue.$router.replace('/');
+                if(value.data.user.fistLogin){
+                    window._Vue.$router.replace('/continuarCadastro');
+                }else{
+                    window._Vue.$router.replace('/');
+                }
             }else{
                 dispatch('ActionSetLoading', false);
                 dispatch('ActionSetLoginMsg', value.data.msg);

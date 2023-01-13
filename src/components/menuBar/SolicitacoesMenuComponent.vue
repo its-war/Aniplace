@@ -31,7 +31,11 @@ export default {
   },
   methods: {
     getFotoSolicitacao(foto){
-      return foto!==null?'/img/users/perfil/'+foto:'/img/users/default.jpg';
+      if(foto){
+        return this.$imgServer + '/img/users/' + foto;
+      }else{
+        return this.$imgUserDefault;
+      }
     },
     aceitarAmizade(de, i){
       this.aceitarLoading = true;

@@ -12,6 +12,7 @@ import LancamentosContainer from "@/components/lancamento/LancamentosContainer";
 import PerfilPageComponent from "@/components/perfil/PerfilPageComponent";
 const LoginPage = () => import("@/views/LoginPage");
 const CadastroPage = () => import("@/views/CadastroPage");
+const ContinuarCadastroPage = () => import("@/views/ContinueCadastroPage");
 const AtivadoPage = () => import("@/views/AtivadoPage");
 const EsqueceuSenhaPage = () => import("@/views/EsqueceuSenhaPage");
 const EpisodioPage = () => import("@/views/EpisodioPageComponent");
@@ -78,6 +79,11 @@ const routes = [
     component: CadastroPage
   },
   {
+    path: '/continuarCadastro',
+    name: 'Continuar Cadastro',
+    component: ContinuarCadastroPage
+  },
+  {
     path: '/esqueceuSenha',
     name: 'Esqueceu sua senha?',
     component: EsqueceuSenhaPage
@@ -122,8 +128,19 @@ router.beforeEach(async (to, from, next) => {
           window.document.title = "Home — AniPlace";
           next({name: 'Home'});
         }else{
-          window.document.title = to.name + " — AniPlace";
-          next();
+          if(to.name === 'Continuar Cadastro'){
+            console.log(store.state.auth.user.fistLogin);
+            if(store.state.auth.user.fistLogin){
+              window.document.title = to.name + " — AniPlace";
+              next();
+            }else{
+              window.document.title = to.name + " — AniPlace";
+              next({name: 'Home'});
+            }
+          }else{
+            window.document.title = to.name + " — AniPlace";
+            next();
+          }
         }
       }else{
         if(to.name === 'Login' || to.name === 'Cadastro' || to.name === 'Ativado' || to.path === '/esqueceuSenha'){
@@ -137,13 +154,14 @@ router.beforeEach(async (to, from, next) => {
     }).catch(reason => {
       console.log("Erro: " + reason);
       window.alert("Nosso servidor está fora do ar, tente novamente mais tarde.");
+      window.location.reload();
     });
 });
 
 router.afterEach((to) => {
   window.scrollTo(0,0);
   store.dispatch('main/ActionSetOverlay', false);
-  if(to.name !== 'Login' && to.name !== 'Cadastro' && to.name !== 'Ativado' && to.path !== '/esqueceuSenha'){
+  if(to.name !== 'Login' && to.name !== 'Cadastro' && to.name !== 'Ativado' && to.path !== '/esqueceuSenha' && to.path !== '/continuarCadastro'){
     if(store.state.auth.user._id !== ''){
       window._Vue.$socket.emit('saveIdSocket', {
         id: store.state.auth.user._id,

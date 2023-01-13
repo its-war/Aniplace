@@ -227,3 +227,13 @@ export function carregarMensagens(id, pagina, limite){
         }
     });
 }
+
+export function continuarCadastro(dados){
+    return http.post('usuario/continuarCadastro', {
+        dados
+    }, {
+        headers: {
+            'x-access-token': window.localStorage.getItem('token')
+        }
+    });
+}
