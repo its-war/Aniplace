@@ -113,7 +113,7 @@ router.beforeEach(async (to, from, next) => {
     });
   }
   let token = window.localStorage.getItem('token');
-    validarLogin(token).then(value => {
+    validarLogin().then(value => {
       if(from.path === '/esqueceuSenha'){
         store.dispatch('auth/ActionSetLoading', false);
         store.dispatch('auth/ActionSetLoginErr', false);

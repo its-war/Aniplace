@@ -33,7 +33,11 @@ export default {
   },
   methods: {
     getFotoNotification(foto){
-      return foto!==null?'/img/users/perfil/'+foto:'/img/users/default.jpg';
+      if(foto){
+        return this.$imgServer + '/img/users/' + foto;
+      }else{
+        return this.$imgUserDefault;
+      }
     },
     lerTudo(){
       this.$emit('lerTudo');
